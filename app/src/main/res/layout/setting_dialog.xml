@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
-            android:text="引擎"
+            android:text="@string/settings_engine"
             android:textSize="16sp" />
     </LinearLayout>
 
@@ -38,7 +38,7 @@
             android:id="@+id/boolean_openbook"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="使用开局库"
+            android:text="@string/settings_use_openbook"
             android:textSize="16sp" />
 
         <TextView
@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:paddingLeft="6dp"
-            android:text="(当前开局库)"
+            android:text="@string/settings_current_openbook"
             android:textSize="16sp" />
     </LinearLayout>
 
@@ -67,7 +67,7 @@
             android:id="@+id/boolean_sound"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="播放音效"
+            android:text="@string/settings_sound"
             android:textSize="16sp" />
     </LinearLayout>
 
@@ -88,7 +88,7 @@
             android:id="@+id/boolean_redgofirst"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="红方先行 (新建游戏有效)"
+            android:text="@string/settings_red_first"
             android:textSize="16sp" />
     </LinearLayout>
 
@@ -108,7 +108,7 @@
             android:id="@+id/boolean_randommove"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="增加电脑走棋的随机性"
+            android:text="@string/settings_random_move"
             android:textSize="16sp" />
     </LinearLayout>
 
@@ -131,7 +131,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="6"
-            android:text="显示历史着法"
+            android:text="@string/settings_history_moves"
             android:textSize="16sp" />
 
         <SeekBar
@@ -171,7 +171,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="6"
-            android:text="Hash大小(M)"
+            android:text="@string/settings_hash_size"
             android:textSize="16sp" />
 
         <SeekBar
@@ -206,7 +206,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="6dp"
         android:paddingBottom="0dp"
-        android:text="搜索设置："
+        android:text="@string/settings_search"
         android:textSize="16sp" />
 
     <RadioGroup
@@ -217,7 +217,7 @@
             android:id="@+id/radioButton_depth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="搜索固定深度 (建议20)" />
+            android:text="@string/settings_search_depth" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -231,7 +231,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:text="深度："
+                android:text="@string/settings_depth_label"
                 android:textSize="14sp" />
 
             <SeekBar
@@ -263,7 +263,7 @@
             android:id="@+id/radioButton_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="搜索固定时间 (建议3000毫秒)" />
+            android:text="@string/settings_search_time" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -277,7 +277,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:text="时间："
+                android:text="@string/settings_time_label"
                 android:textSize="14sp" />
 
             <SeekBar
@@ -311,7 +311,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
-            android:text="无限搜索，须闪电出着"
+            android:text="@string/settings_search_infinite"
 
             android:textSize="14sp" />
 
@@ -322,5 +322,34 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider" />
+
+    <TextView
+        android:id="@+id/textView_language"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="4dp"
+        android:text="@string/language"
+        android:textSize="16sp" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup_language"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_lang_vi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="@string/language_vietnamese" />
+
+        <RadioButton
+            android:id="@+id/radio_lang_zh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/language_chinese" />
+    </RadioGroup>
 
 </LinearLayout>

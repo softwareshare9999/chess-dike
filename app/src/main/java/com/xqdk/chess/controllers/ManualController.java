@@ -19,6 +19,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import com.xqdk.chess.R;
+import com.xqdk.chess.i18n.Res;
 
 public class ManualController extends GameController{
     public XQFManual manual = null;
@@ -90,12 +92,12 @@ public class ManualController extends GameController{
 
     public void manualForward() {
         if(manual == null) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "未打开棋谱...");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.manual_not_open));
             return;
         }
 
         if(moveNode == null) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "状态异常");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.manual_bad_state));
             return;
         }
 
@@ -123,27 +125,27 @@ public class ManualController extends GameController{
                 multiPVs.add(pvInfo);
             }
             game.generateSuggestedMoves(multiPVs);
-            gui.onGameEvent(GameStatus.MULTIPV, "请选择分支: ");
+            gui.onGameEvent(GameStatus.MULTIPV, Res.get(R.string.manual_choose_branch));
             Log.d("ManualController", "multiPVs: " + multiPVs.size());
         } else{
-            gui.onGameEvent(GameStatus.ILLEGAL, "没有下一步了");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.manual_no_next));
         }
 
     }
 
     public void manualBack() {
         if(manual == null) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "未打开棋谱...");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.manual_not_open));
             return;
         }
 
         if(moveNode == null) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "状态异常");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.manual_bad_state));
             return;
         }
 
         if(moveNode.parent == null) {
-            String hint = "已经到达开局" + "," + getFirstMoveColor();
+            String hint = Res.get(R.string.manual_at_start) + "," + getFirstMoveColor();
             game.suggestedMoves.clear();
             gui.onGameEvent(GameStatus.MOVE, hint);
             return;
@@ -152,24 +154,24 @@ public class ManualController extends GameController{
         moveNode = moveNode.parent;
         game.undoMove();
         toggleTurn();
-        gui.onGameEvent(GameStatus.MOVE, "回到上一步");
+        gui.onGameEvent(GameStatus.MOVE, Res.get(R.string.manual_back_one));
     }
 
     public String getFirstMoveColor(){
         if(manual == null) {
-            return "未打开棋谱...";
+            return Res.get(R.string.manual_not_open);
         }
 
         if(manual.board.bRedGo) {
-            return "红方先行";
+            return Res.get(R.string.manual_red_first);
         } else {
-            return "黑方先行";
+            return Res.get(R.string.manual_black_first);
         }
     }
 
     public void manualFirst() {
         if(manual == null) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "未打开棋谱...");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.manual_not_open));
             return;
         }
 
@@ -184,18 +186,18 @@ public class ManualController extends GameController{
 
         setSatate(manual.board.bRedGo);
 
-        String hint = "回到开局" + "," + getFirstMoveColor();
+        String hint = Res.get(R.string.manual_back_start) + "," + getFirstMoveColor();
         gui.onGameEvent(GameStatus.MOVE, hint);
     }
 
     public void selectBranch(int i) {
         if(manual == null) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "未打开棋谱...");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.manual_not_open));
             return;
         }
 
         if(moveNode == null) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "状态异常");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.manual_bad_state));
             return;
         }
 
@@ -211,11 +213,11 @@ public class ManualController extends GameController{
                     toggleTurn();
 
                     game.suggestedMoves.clear();
-                    gui.onGameEvent(GameStatus.MOVE, "分支" + (i+1) + ": " + game.getLastMoveDesc());
+                    gui.onGameEvent(GameStatus.MOVE, Res.get(R.string.manual_branch_n, i+1, game.getLastMoveDesc()));
                 }
             }
         } else {
-            gui.onGameEvent(GameStatus.ILLEGAL, "错误的分支: " + (i+1));
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.manual_bad_branch, i+1));
         }
     }
 }

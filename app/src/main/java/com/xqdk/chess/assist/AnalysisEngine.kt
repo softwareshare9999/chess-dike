@@ -2,6 +2,7 @@ package com.xqdk.chess.assist
 
 import android.content.Context
 import android.util.Log
+import com.xqdk.chess.R
 import com.xqdk.chess.gamelogic.Piece
 import org.petero.droidfish.engine.EngineConfig
 import org.petero.droidfish.engine.UCIEngine
@@ -42,7 +43,7 @@ class AnalysisEngine(
     private val engineListener = object : EngineListener {
         override fun reportEngineError(errMsg: String?) {
             Log.w(tag, "engine error: $errMsg")
-            listener.onEngineError(errMsg ?: "引擎错误")
+            listener.onEngineError(errMsg ?: context.getString(R.string.engine_error_generic))
         }
         override fun notifyEngineName(engineName: String?) {}
         override fun notifySearchResult(searchId: Int, bestMove: String?, nextPonderMove: String?) {}
@@ -102,7 +103,12 @@ class AnalysisEngine(
                 } catch (e: Exception) {
                     Log.e(tag, "engine start failed (attempt $attempt)", e)
                     if (attempt >= 2) {
-                        listener.onEngineError("引擎启动失败：${e.message ?: "未知原因"}（请重新连线重试）")
+                        listener.onEngineError(
+                            context.getString(
+                                R.string.engine_start_failed,
+                                e.message ?: context.getString(R.string.engine_unknown_reason),
+                            )
+                        )
                     }
                 }
                 if (!ready && !shuttingDown && attempt < 2) {
@@ -117,7 +123,7 @@ class AnalysisEngine(
     private fun doStart() {
         val ec = EngineConfig().apply { workDir = context.filesDir.absolutePath }
         val eng: UCIEngine = UCIEngineBase.getEngine("pikafish", ec, engineListener)
-            ?: throw IllegalStateException("无法创建 pikafish 引擎")
+            ?: throw IllegalStateException(context.getString(R.string.engine_create_failed))
         engine = eng
         eng.initialize()
 
@@ -130,7 +136,8 @@ class AnalysisEngine(
         val dl = 200L
         while (!uciok && elapsed < 10000) {
             // null = 引擎输出流已关闭（进程退出）：立即失败，不再空等超时
-            val line = eng.readLineFromEngine(dl.toInt()) ?: throw IllegalStateException("引擎进程意外退出")
+            val line = eng.readLineFromEngine(dl.toInt())
+                ?: throw IllegalStateException(context.getString(R.string.engine_process_exited))
             elapsed += dl
             if (line.isEmpty()) continue
             val tokens = line.trim().split(WS)
@@ -139,7 +146,7 @@ class AnalysisEngine(
                 tokens[0] == "id" || tokens[0] == "option" -> eng.registerOption(tokens.toTypedArray())
             }
         }
-        if (!uciok) throw IllegalStateException("引擎握手超时（uciok），多为 CPU/兼容性问题")
+        if (!uciok) throw IllegalStateException(context.getString(R.string.engine_uciok_timeout))
 
         // 与游戏内 ComputerPlayer 一致：uciok 后必须调用 initConfig 标记配置完成，
         // 否则 ExternalEngine 的启动看门狗会在 10 秒后误报 "UCI protocol error"
@@ -159,11 +166,12 @@ class AnalysisEngine(
         var readyOk = false
         elapsed = 0L
         while (!readyOk && elapsed < 15000) {
-            val line = eng.readLineFromEngine(dl.toInt()) ?: throw IllegalStateException("引擎进程意外退出")
+            val line = eng.readLineFromEngine(dl.toInt())
+                ?: throw IllegalStateException(context.getString(R.string.engine_process_exited))
             elapsed += dl
             if (line.trim() == "readyok") readyOk = true
         }
-        if (!readyOk) throw IllegalStateException("引擎就绪握手失败（readyok）")
+        if (!readyOk) throw IllegalStateException(context.getString(R.string.engine_readyok_failed))
         ready = true
         Log.i(tag, "analysis engine ready")
         listener.onEngineReady()

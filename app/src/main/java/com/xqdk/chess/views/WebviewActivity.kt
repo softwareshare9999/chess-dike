@@ -8,13 +8,13 @@ import android.webkit.WebViewClient
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import com.xqdk.chess.i18n.LocaleAwareActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.readystatesoftware.android.sqliteassethelper.BuildConfig
 import com.xqdk.chess.R
 
-class WebviewActivity : AppCompatActivity() {
+class WebviewActivity : LocaleAwareActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +27,7 @@ class WebviewActivity : AppCompatActivity() {
         val datetime = java.util.Date(packageInfo.lastUpdateTime)
         // convert datetime to string with format YYYY-MM-DD HH:MM:SS
         val datetimeString = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(datetime)
-        textViewVersion.text = "当前版本: ${packageInfo.versionCode}\n" + "编译时间: $datetimeString"
+        textViewVersion.text = getString(R.string.current_version_build, packageInfo.versionCode, datetimeString)
 
         // bind imageButton and set click listener
         val imageButtonBack: ImageButton = findViewById(R.id.imageButtonBack)

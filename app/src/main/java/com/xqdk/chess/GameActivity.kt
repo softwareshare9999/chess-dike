@@ -13,7 +13,7 @@ import android.view.WindowManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import com.xqdk.chess.i18n.LocaleAwareActivity
 import com.github.mikephil.charting.components.Description
 import com.xqdk.chess.adapters.HistoryAndTrendAdapter
 import com.xqdk.chess.controllers.GameController
@@ -23,7 +23,7 @@ import com.xqdk.chess.gamelogic.GameStatus
 import com.xqdk.chess.views.ChessView
 
 
-class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerListener,
+class GameActivity() : LocaleAwareActivity(), View.OnTouchListener, ControllerListener,
     View.OnClickListener, SettingDialogFragment.SettingDialogListener {
 
     // 防止重复点击
@@ -129,9 +129,9 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
 
         // init status text
         if(controller.isRedTurn){
-            setStatusText("等待红方走棋")
+            setStatusText(getString(R.string.wait_red_move))
         } else if(controller.isBlackTurn) {
-            setStatusText("等待黑方走棋")
+            setStatusText(getString(R.string.wait_black_move))
         }
 
         // receive parameters from intent
@@ -183,17 +183,17 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
 
     fun showNewGameConfirmDialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("确定开始新游戏?")
-        builder.setMessage("你是否要放弃当前的游戏，开始新游戏呢?")
+        builder.setTitle(getString(R.string.new_game_title))
+        builder.setMessage(getString(R.string.new_game_message))
 
-        builder.setPositiveButton("开始新游戏") { dialog, which ->
+        builder.setPositiveButton(getString(R.string.new_game_start)) { dialog, which ->
             // User clicked Yes button
             controller.startNewGame()
             historyAndTrendAdapter.update()
             if(controller.settings.red_go_first) {
-                setStatusText("新游戏，红方先行")
+                setStatusText(getString(R.string.new_game_red_first))
             } else {
-                setStatusText("新游戏，黑方先行")
+                setStatusText(getString(R.string.new_game_black_first))
             }
             // hide choice buttons
             if(binding.choice1bt.visibility == View.VISIBLE){
@@ -207,7 +207,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
             }, 1000)
         }
 
-        builder.setNegativeButton("继续当前游戏") { dialog, which ->
+        builder.setNegativeButton(getString(R.string.new_game_continue)) { dialog, which ->
             // User clicked No button
             dialog.dismiss()
         }
@@ -231,8 +231,8 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
 
     fun showInputFENDialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("从FEN串开始新游戏")
-        builder.setMessage("请输入棋局的FEN串：")
+        builder.setTitle(getString(R.string.fen_new_game_title))
+        builder.setMessage(getString(R.string.fen_new_game_message))
 
         // Set up the input
         val input = EditText(this)
@@ -250,12 +250,12 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
         builder.setView(input)
 
         // Set up the buttons
-        builder.setPositiveButton("确定", DialogInterface.OnClickListener { dialog, which ->
+        builder.setPositiveButton(getString(R.string.ok), DialogInterface.OnClickListener { dialog, which ->
             val userInput = input.text.toString()
             controller.startFENGame(userInput)
             // Handle the input string here
         })
-        builder.setNegativeButton("取消", DialogInterface.OnClickListener { dialog, which ->
+        builder.setNegativeButton(getString(R.string.cancel), DialogInterface.OnClickListener { dialog, which ->
             dialog.cancel()
         })
 
@@ -269,10 +269,10 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
                 controller.toggleComputer()
                 if(controller.isComputerPlaying){
                     binding.playerbt.setImageResource(R.drawable.computer)
-                    setStatusText("切换为电脑执黑棋")
+                    setStatusText(getString(R.string.switch_computer_black))
                 } else {
                     binding.playerbt.setImageResource(R.drawable.person)
-                    setStatusText("切换为人工执黑棋")
+                    setStatusText(getString(R.string.switch_human_black))
                 }
             }
             binding.playerbackbt -> {
@@ -285,7 +285,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
                 controller.toggleComputerAutoPlay()
                 if(controller.isAutoPlay){
                     binding.autoplaybt.setImageResource(R.drawable.play_circle)
-                    setStatusText("开启自动走棋")
+                    setStatusText(getString(R.string.auto_play_on))
 
                     if(controller.isBlackTurn() && controller.isComputerPlaying){
                         // 如果电脑执黑，自动走棋
@@ -293,7 +293,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
                     }
                 } else {
                     binding.autoplaybt.setImageResource(R.drawable.pause_circle)
-                    setStatusText("暂停自动走棋")
+                    setStatusText(getString(R.string.auto_play_pause))
                 }
             }
             binding.quickbt -> {
@@ -326,11 +326,11 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
                 val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                 val clip = android.content.ClipData.newPlainText("FEN", fenString)
                 clipboard.setPrimaryClip(clip)
-                setStatusText("FEN串已复制到剪贴板")
+                setStatusText(getString(R.string.fen_copied))
                 Log.d("GameActivity", "fenString: $fenString")
             }
             binding.helpbt -> {
-                setStatusText("正在搜索建议着法...")
+                setStatusText(getString(R.string.searching_hint_moves))
                 controller.playerAskForHelp();
             }
             binding.stophelpbt -> {
@@ -343,11 +343,11 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
                 binding.trendsbt.setImageResource(imageResource)
 
                 if(controller.isShowTrends){
-                    setStatusText("显示评估趋势图")
+                    setStatusText(getString(R.string.show_eval_trend))
                     binding.trendchart.visibility = View.VISIBLE
                     binding.historyscroll.visibility = View.GONE
                 } else {
-                    setStatusText("显示走法历史")
+                    setStatusText(getString(R.string.show_move_history))
                     binding.trendchart.visibility = View.GONE
                     binding.historyscroll.visibility = View.VISIBLE
                 }
@@ -358,17 +358,17 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
                 saveThenExit();
             }
             binding.choice1bt -> {
-                setStatusText("选择着数1")
+                setStatusText(getString(R.string.select_pv_n, 1))
                 hideAllChoiceBts()
                 controller.selectMultiPV(0)
             }
             binding.choice2bt -> {
-                setStatusText("选择着数2")
+                setStatusText(getString(R.string.select_pv_n, 2))
                 hideAllChoiceBts()
                 controller.selectMultiPV(1)
             }
             binding.choice3bt -> {
-                setStatusText("选择着数3")
+                setStatusText(getString(R.string.select_pv_n, 3))
                 hideAllChoiceBts()
                 controller.selectMultiPV(2)
             }

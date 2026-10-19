@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.xqdk.chess.controllers.GameController
-import com.xqdk.chess.openbook.BHDatabase
+import com.xqdk.chess.i18n.LocaleHelper
 
 class SettingDialogFragment : DialogFragment() {
     interface SettingDialogListener {
@@ -41,14 +41,14 @@ class SettingDialogFragment : DialogFragment() {
         val engineInfoTV = view.findViewById<TextView>(R.id.textView_engine_info)
         // limit the length of engineInfo
         if (engineInfo.length > 22) {
-            engineInfoTV.text = "引擎: " + engineInfo.substring(0, 22) + ".."
+            engineInfoTV.text = getString(R.string.engine_label_prefix, engineInfo.substring(0, 22) + "..")
         } else {
-            engineInfoTV.text = "引擎: " + engineInfo
+            engineInfoTV.text = getString(R.string.engine_label_prefix, engineInfo)
         }
 
         val booleanOpenbook = view.findViewById<CheckBox>(R.id.boolean_openbook)
         val textviewOpenbook = view.findViewById<TextView>(R.id.textViewOpenBook)
-        textviewOpenbook.text = "(" + BHDatabase.OPENBOOK_NAME + ")"
+        textviewOpenbook.text = "(" + getString(R.string.openbook_name_display) + ")"
 
         val booleanSound = view.findViewById<CheckBox>(R.id.boolean_sound)
 
@@ -149,10 +149,17 @@ class SettingDialogFragment : DialogFragment() {
             }
         })
 
+        val radioLangVi = view.findViewById<android.widget.RadioButton>(R.id.radio_lang_vi)
+        val radioLangZh = view.findViewById<android.widget.RadioButton>(R.id.radio_lang_zh)
+        if (LocaleHelper.isChinese(requireContext())) {
+            radioLangZh.isChecked = true
+        } else {
+            radioLangVi.isChecked = true
+        }
 
         builder.setView(view)
-            .setTitle("游戏设置")
-            .setPositiveButton("确定") { dialog, id ->
+            .setTitle(R.string.settings_title)
+            .setPositiveButton(R.string.ok) { dialog, id ->
                 settings.openbook = booleanOpenbook.isChecked
                 settings.sound_effect = booleanSound.isChecked
                 settings.history_moves = historyInput.progress
@@ -166,9 +173,17 @@ class SettingDialogFragment : DialogFragment() {
                 settings.random_move = randomMove.isChecked
                 settings.saveSettings()
                 controller.applyEngineSetting()
+                val newLang = if (radioLangZh.isChecked) LocaleHelper.LANG_ZH else LocaleHelper.LANG_VI
+                val langChanged = LocaleHelper.getLanguage(requireContext()) != newLang
+                if (langChanged) {
+                    LocaleHelper.setLanguage(requireContext(), newLang)
+                }
                 listener?.onDialogPositiveClick()
+                if (langChanged) {
+                    requireActivity().recreate()
+                }
             }
-            .setNegativeButton("取消") { dialog, id ->
+            .setNegativeButton(R.string.cancel) { dialog, id ->
                 listener?.onDialogNegativeClick()
                 dialog.cancel()
             }

@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.xqdk.chess.R;
+import com.xqdk.chess.i18n.Res;
 
 public class GameController implements EngineListener, SearchListener {
     public ComputerPlayer player = null;
@@ -117,7 +119,7 @@ public class GameController implements EngineListener, SearchListener {
         boolean result = tempGame.currentBoard.restoreFromFEN(fen);
         if (!result) {
             Log.e("GameController", "Failed to restore from FEN: " + fen);
-            gui.onGameEvent(GameStatus.ILLEGAL, "无效的FEN串");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_invalid_fen));
             return;
         }
 
@@ -130,7 +132,7 @@ public class GameController implements EngineListener, SearchListener {
         game.history.clear();
         game.startPos = null;
         game.endPos = null;
-        gui.onGameEvent(GameStatus.UPDATEUI, "从FEN开局");
+        gui.onGameEvent(GameStatus.UPDATEUI, Res.get(R.string.info_fen_start));
         player.stopSearch();
         player.uciNewGame();
     }
@@ -163,7 +165,7 @@ public class GameController implements EngineListener, SearchListener {
     public synchronized boolean stepBack() {
         // 只在WAINTING_FOR_USER或WAINTING_FOR_ENGINE状态下才能悔棋
         if (state != ControllerState.WAITING_FOR_USER && state != ControllerState.WAITING_FOR_ENGINE) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "搜索中，请稍候...");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_searching_wait));
             return false;
         }
         if (game.history.size() > 0) {
@@ -172,7 +174,7 @@ public class GameController implements EngineListener, SearchListener {
             gui.onGameEvent(GameStatus.MOVE, game.getLastMoveDesc());
             return true;
         } else {
-            gui.onGameEvent(GameStatus.ILLEGAL, "无棋可悔");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_no_undo));
             return false;
         }
     }
@@ -181,18 +183,18 @@ public class GameController implements EngineListener, SearchListener {
     public synchronized void computerForward() {
         if (state == ControllerState.WAITING_FOR_USER) {
             // play only plays the black
-            gui.onGameEvent(GameStatus.ILLEGAL, "该红方出子");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_red_to_move_piece));
             return;
         }
         if (state != ControllerState.WAITING_FOR_ENGINE) {
             // play only plays the black
-            gui.onGameEvent(GameStatus.ILLEGAL, "搜索中，请稍候或闪电出着");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_searching_or_flash));
             return;
         }
 
         if(settings.getOpenbook()) {
             // search openbook first
-            gui.onGameEvent(GameStatus.UPDATEUI, "检索开局库...");
+            gui.onGameEvent(GameStatus.UPDATEUI, Res.get(R.string.info_openbook_lookup));
 
             long vkey = game.currentBoard.getZobrist(isRedTurn());
             List<BookData> bookData = bhBook == null
@@ -211,9 +213,9 @@ public class GameController implements EngineListener, SearchListener {
         }
 
         if (settings.getGo_infinite()) {
-            gui.onGameEvent(GameStatus.UPDATEUI, "无限搜索着法中, 须闪电出着!");
+            gui.onGameEvent(GameStatus.UPDATEUI, Res.get(R.string.info_infinite_search));
         } else {
-            gui.onGameEvent(GameStatus.UPDATEUI, "搜索着法中...");
+            gui.onGameEvent(GameStatus.UPDATEUI, Res.get(R.string.info_searching_moves));
         }
         state = ControllerState.WAITING_FOR_ENGINE_BESTMV;
 
@@ -239,12 +241,12 @@ public class GameController implements EngineListener, SearchListener {
 
     public synchronized void computerAskForMultiPV() {
         if (state == ControllerState.WAITING_FOR_ENGINE_MULTIPV) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "搜索变着中,请稍候或闪电出着");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_searching_alt));
             return;
         }
         if (state == ControllerState.WAITING_FOR_ENGINE_BESTMV) {
             // play only plays the black
-            gui.onGameEvent(GameStatus.ILLEGAL, "电脑正在出着,请稍候或闪电出着");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_computer_moving));
             return;
         }
 
@@ -253,7 +255,7 @@ public class GameController implements EngineListener, SearchListener {
             // undo
             boolean result = stepBack();
             if (!result) {
-                gui.onGameEvent(GameStatus.ILLEGAL, "该红方出着，无法变着");
+                gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_red_cannot_alt));
                 return;
             }
         }
@@ -261,15 +263,15 @@ public class GameController implements EngineListener, SearchListener {
         // 最后检查目前的状态是否是等待引擎出着
         if (state != ControllerState.WAITING_FOR_ENGINE) {
             Log.d("GameController", "Invalid state, computerAskForMultiPV should not be called now." + state);
-            gui.onGameEvent(GameStatus.ILLEGAL, "黑方出招时方可变着");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_alt_only_black));
             return;
         }
 
         // 开始搜索中
         if (settings.getGo_infinite()) {
-            gui.onGameEvent(GameStatus.UPDATEUI, "无限搜索变着中, 须闪电出着!");
+            gui.onGameEvent(GameStatus.UPDATEUI, Res.get(R.string.info_infinite_alt));
         } else {
-            gui.onGameEvent(GameStatus.UPDATEUI, "搜索变着中...");
+            gui.onGameEvent(GameStatus.UPDATEUI, Res.get(R.string.info_searching_alt));
         }
         state = ControllerState.WAITING_FOR_ENGINE_MULTIPV;
         multiPVs.clear();
@@ -298,20 +300,20 @@ public class GameController implements EngineListener, SearchListener {
     public synchronized void playerAskForHelp() {
         if (state == ControllerState.WAITING_FOR_USER_MULTIPV) {
             // play only plays the black
-            gui.onGameEvent(GameStatus.ILLEGAL, "正在寻求帮助，请稍候或闪电出着");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_seeking_help));
             return;
         }
         if (state != ControllerState.WAITING_FOR_USER) {
             // play only plays the black
-            gui.onGameEvent(GameStatus.ILLEGAL, "己方出招时方可寻求帮助");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_help_own_turn));
             return;
         }
 
         // 开始搜索中
         if (settings.getGo_infinite()) {
-            gui.onGameEvent(GameStatus.UPDATEUI, "无限寻求帮助中, 须闪电出着!");
+            gui.onGameEvent(GameStatus.UPDATEUI, Res.get(R.string.info_infinite_help));
         } else {
-            gui.onGameEvent(GameStatus.UPDATEUI, "寻求帮助中...");
+            gui.onGameEvent(GameStatus.UPDATEUI, Res.get(R.string.info_seeking_help));
         }
         state = ControllerState.WAITING_FOR_USER_MULTIPV;
         multiPVs.clear();
@@ -338,7 +340,7 @@ public class GameController implements EngineListener, SearchListener {
 
     public synchronized void evalCurrentBoard() {
         if (!(state == ControllerState.WAITING_FOR_USER || state == ControllerState.WAITING_FOR_ENGINE)) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "等待出着时方可评估局面");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_eval_when_idle));
             return;
         }
 
@@ -362,14 +364,14 @@ public class GameController implements EngineListener, SearchListener {
             if (Piece.isValid(game.currentBoard.getPieceByPosition(pos))) {
                 // and the piece is valid
                 game.setStartPos(pos);
-                gui.onGameEvent(GameStatus.SELECT, "选择棋子");
+                gui.onGameEvent(GameStatus.SELECT, Res.get(R.string.select_piece));
             }
         } else {
             // startPos is not empty
             if (game.startPos.equals(pos)) {
                 // click the same position, unselect
                 game.clearStartPos();
-                gui.onGameEvent(GameStatus.SELECT, "取消选择棋子");
+                gui.onGameEvent(GameStatus.SELECT, Res.get(R.string.deselect_piece));
                 return;
             }
 
@@ -382,7 +384,7 @@ public class GameController implements EngineListener, SearchListener {
                 // 非走棋状态，不允许走棋
                 if (state != ControllerState.WAITING_FOR_USER && state != ControllerState.WAITING_FOR_ENGINE) {
                     Log.d("GameController", "非走棋状态，请稍候");
-                    gui.onGameEvent(GameStatus.ILLEGAL, "非走棋状态，请稍候...");
+                    gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_not_moving_state));
 
                     // reset start/end position
                     game.startPos = null;
@@ -393,12 +395,12 @@ public class GameController implements EngineListener, SearchListener {
                 int piece = game.currentBoard.getPieceByPosition(game.startPos);
                 // 确保棋子颜色和当前状态匹配
                 if (state == ControllerState.WAITING_FOR_USER && !Piece.isRed(piece)) {
-                    gui.onGameEvent(GameStatus.ILLEGAL, "该红方出着");
+                    gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_red_to_move));
                     game.startPos = null;
                     game.endPos = null;
                     return;
                 } else if (state == ControllerState.WAITING_FOR_ENGINE && Piece.isRed(piece)) {
-                    gui.onGameEvent(GameStatus.ILLEGAL, "该黑方出着");
+                    gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_black_to_move));
                     game.startPos = null;
                     game.endPos = null;
                     return;
@@ -408,7 +410,7 @@ public class GameController implements EngineListener, SearchListener {
             } else {
                 // clear start position
                 game.startPos = null;
-                gui.onGameEvent(GameStatus.ILLEGAL, "非法走法");
+                gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_illegal_move));
             }
         }
     }
@@ -417,12 +419,12 @@ public class GameController implements EngineListener, SearchListener {
         // send "stop" to engine for "bestmove"
         if (state == ControllerState.WAITING_FOR_ENGINE_BESTMV || state == ControllerState.WAITING_FOR_ENGINE_MULTIPV) {
             player.stopSearch();
-            gui.onGameEvent(GameStatus.SELECT, "闪电出着中...");
+            gui.onGameEvent(GameStatus.SELECT, Res.get(R.string.flash_moving));
         } else if (state == ControllerState.WAITING_FOR_USER_MULTIPV) {
             player.stopSearch();
-            gui.onGameEvent(GameStatus.SELECT, "停止寻求帮助...");
+            gui.onGameEvent(GameStatus.SELECT, Res.get(R.string.stop_help));
         } else {
-            gui.onGameEvent(GameStatus.ILLEGAL, "无搜索任务");
+            gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_no_search_task));
         }
     }
 
@@ -448,7 +450,7 @@ public class GameController implements EngineListener, SearchListener {
             doMoveAndUpdateStatus(null);
         } else {
             Log.e("GameController", "Invalid move: " + bestmove);
-            gui.onGameEvent(GameStatus.LOSE, "无路可走");
+            gui.onGameEvent(GameStatus.LOSE, Res.get(R.string.lose_no_move));
         }
     }
 
@@ -468,7 +470,7 @@ public class GameController implements EngineListener, SearchListener {
                 multiPVs.add(pvinfo);
             } else {
                 Log.e("GameController", "Invalid move: " + bestmove);
-                gui.onGameEvent(GameStatus.LOSE, "无路可走");
+                gui.onGameEvent(GameStatus.LOSE, Res.get(R.string.lose_no_move));
                 return;
             }
         }
@@ -476,7 +478,7 @@ public class GameController implements EngineListener, SearchListener {
         game.generateSuggestedMoves(multiPVs);
 
         // notify GUI
-        gui.onGameEvent(GameStatus.MULTIPV, "选择编号或直接移动棋子：");
+        gui.onGameEvent(GameStatus.MULTIPV, Res.get(R.string.multipv_choose));
     }
 
     public void selectMultiPV(int index) {
@@ -504,9 +506,9 @@ public class GameController implements EngineListener, SearchListener {
         if (Piece.isRed(piece) != isRedTurn()) {
             Log.e("GameController", "Invalid move, piece color is not match");
             if (isRedTurn()) {
-                gui.onGameEvent(GameStatus.ILLEGAL, "该红方出着");
+                gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_red_to_move));
             } else {
-                gui.onGameEvent(GameStatus.ILLEGAL, "该黑方出着");
+                gui.onGameEvent(GameStatus.ILLEGAL, Res.get(R.string.err_black_to_move));
             }
             // reset start/end position
             game.startPos = null;
@@ -527,9 +529,9 @@ public class GameController implements EngineListener, SearchListener {
 
         // send notification to GUI
         if (status == GameStatus.CHECKMATE) {
-            gui.onGameEvent(GameStatus.CHECKMATE, "将死！");
+            gui.onGameEvent(GameStatus.CHECKMATE, Res.get(R.string.checkmate));
         } else if (status == GameStatus.CHECK) {
-            gui.onGameEvent(GameStatus.CHECK, "将军！");
+            gui.onGameEvent(GameStatus.CHECK, Res.get(R.string.check));
         } else {
             if (pvinfo != null) {
                 Log.d("GameController", "PV: " + pvinfo);
@@ -537,7 +539,7 @@ public class GameController implements EngineListener, SearchListener {
                 // show multiPV infos
                 Board b = new Board(game.currentBoard);
                 ArrayList<Move> moves = pvinfo.pv;
-                String desc = "预测着法：";
+                String desc = Res.get(R.string.predicted_moves);
                 for (int i = 1; i < moves.size() && i <= 4; i++) {
                     Move m = moves.get(i);
                     m.setBoard(b);

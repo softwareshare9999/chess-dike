@@ -5,9 +5,11 @@ import android.util.Log;
 import com.igormaznitsa.jbbp.JBBPParser;
 import com.igormaznitsa.jbbp.model.JBBPFieldArrayByte;
 import com.igormaznitsa.jbbp.model.JBBPFieldStruct;
+import com.xqdk.chess.R;
 import com.xqdk.chess.gamelogic.Move;
 import com.xqdk.chess.gamelogic.Piece;
 import com.xqdk.chess.gamelogic.Position;
+import com.xqdk.chess.i18n.Res;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -341,13 +343,13 @@ public class XQFParser {
         // 0033             棋局的结果: 0x00-未知,0x01-红胜,0x02-黑胜,0x03-和棋
         switch (result) {
             case 0x01:
-                return "红胜";
+                return Res.get(R.string.result_red_win);
             case 0x02:
-                return "黑胜";
+                return Res.get(R.string.result_black_win);
             case 0x03:
-                return "平局";
+                return Res.get(R.string.result_draw);
             default:
-                return "未知";
+                return Res.get(R.string.result_unknown);
         }
     }
 
@@ -355,13 +357,13 @@ public class XQFParser {
         //     0040             棋局的类型: 0x00-全局文件, 0x01-布局文件,
         //                                 0x02-中局文件, 0x03-残局文件
         if (b == 0x00) {
-            return "全局";
+            return Res.get(R.string.category_full);
         } else if (b == 0x01) {
-            return "布局";
+            return Res.get(R.string.category_opening);
         } else if (b == 0x02) {
-            return "中局";
+            return Res.get(R.string.category_middle);
         } else if (b == 0x03) {
-            return "残局";
+            return Res.get(R.string.category_endgame);
         }
         return null;
     }

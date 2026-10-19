@@ -34,7 +34,7 @@ class OverlayModel(
     /** 遮挡提醒行：悬浮窗盖住已定位棋盘时显示；null 隐藏（独立小行，不挤占状态行） */
     val occludedText: String? = null,
     /** 主状态大字：轮到我方走 / 已停止指导 / 引擎异常…（含 setStatus 覆盖文案） */
-    val headlineText: String = "识别中",
+    val headlineText: String = "",
     /** 优势行：红方优势 +0.8 / 胜率约 4%；null 隐藏 */
     val advantageText: String? = null,
     val advantageTone: QiTone = QiTone.NONE,
@@ -162,7 +162,7 @@ class OverlayPanelView @JvmOverloads constructor(
 
     private fun resetCloseState() {
         closeArmed = false
-        btnClose.text = "关闭"
+        btnClose.text = context.getString(R.string.overlay_close)
         btnClose.setTextColor(closeNormalColor)
     }
 
@@ -212,7 +212,7 @@ class OverlayPanelView @JvmOverloads constructor(
         btnClose.setOnClickListener {
             if (!closeArmed) {
                 closeArmed = true
-                btnClose.text = "确认?" // 23dp 网格按钮，确认文案需紧凑
+                btnClose.text = context.getString(R.string.confirm_q) // 23dp 网格按钮，确认文案需紧凑
                 btnClose.setTextColor(palette.danger)
                 postDelayed(closeReset, 3000)
             } else {
@@ -298,16 +298,16 @@ class OverlayPanelView @JvmOverloads constructor(
         }
 
         // 值芯片：标签灰 + 值琥珀（等宽由 tnum 保证）；setText 前比对防频跳（根因 4）
-        setChipText(btnStrength, "深度", model.depthText)
-        setChipText(btnHash, "哈希", model.hashText)
-        setChipText(btnEngine, "引擎", model.engineText)
-        val pauseText = if (model.paused) "继续" else "停止"
+        setChipText(btnStrength, context.getString(R.string.overlay_depth), model.depthText)
+        setChipText(btnHash, context.getString(R.string.overlay_hash), model.hashText)
+        setChipText(btnEngine, context.getString(R.string.overlay_engine), model.engineText)
+        val pauseText = if (model.paused) context.getString(R.string.overlay_resume) else context.getString(R.string.overlay_stop)
         if (btnPause.text != pauseText) btnPause.text = pauseText
 
         // 变招档位按钮："N变"（档位缓存比对，文本仅在变化时构造）
         if (lastMultiPv != model.multiPv) {
             lastMultiPv = model.multiPv
-            btnMultiPv.text = "${model.multiPv}变"
+            btnMultiPv.text = context.getString(R.string.overlay_multipv_n, model.multiPv)
         }
 
         chess.pieces = model.pieces

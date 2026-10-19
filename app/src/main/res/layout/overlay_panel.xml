@@ -54,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
-            android:text="挡住棋盘，建议移开"
+            android:text="@string/overlay_occluded"
             android:visibility="gone" />
 
         <!-- 主状态大字：轮到我方走 / 已停止指导 / 引擎异常… -->
@@ -64,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="识别中" />
+            android:text="@string/overlay_recognizing" />
 
         <!-- 优势行：红方优势 +0.8（占优玉绿 / 劣势警示红） -->
         <TextView
@@ -108,7 +108,7 @@
                 android:layout_height="28dp"
                 android:layout_marginEnd="2dp"
                 android:layout_weight="1"
-                android:text="变招" />
+                android:text="@string/overlay_change_move" />
 
             <TextView
                 android:id="@+id/overlay_btn_multipv"
@@ -117,7 +117,7 @@
                 android:layout_height="28dp"
                 android:layout_marginStart="2dp"
                 android:layout_weight="1"
-                android:text="3变" />
+                android:text="@string/overlay_multipv_3" />
         </LinearLayout>
 
         <LinearLayout
@@ -133,7 +133,7 @@
                 android:layout_height="28dp"
                 android:layout_marginEnd="2dp"
                 android:layout_weight="1"
-                android:text="悔棋" />
+                android:text="@string/overlay_undo" />
 
             <TextView
                 android:id="@+id/overlay_btn_manual"
@@ -142,7 +142,7 @@
                 android:layout_height="28dp"
                 android:layout_marginStart="2dp"
                 android:layout_weight="1"
-                android:text="手动" />
+                android:text="@string/overlay_manual" />
         </LinearLayout>
     </LinearLayout>
 
@@ -166,20 +166,20 @@
         <TextView
             android:id="@+id/overlay_btn_strength"
             style="@style/OverlayChip"
-            android:text="深度 —" />
+            android:text="@string/overlay_depth_placeholder" />
 
         <TextView
             android:id="@+id/overlay_btn_hash"
             style="@style/OverlayChip"
             android:layout_marginTop="2dp"
-            android:text="哈希 —" />
+            android:text="@string/overlay_hash_placeholder" />
 
         <!-- 引擎芯片（可点）：显示当前识别引擎（ONNX/YOLO），点击热切换并重新确认 -->
         <TextView
             android:id="@+id/overlay_btn_engine"
             style="@style/OverlayChip"
             android:layout_marginTop="2dp"
-            android:text="引擎 —" />
+            android:text="@string/overlay_engine_placeholder" />
 
         <TextView
             android:id="@+id/overlay_btn_turn"
@@ -187,7 +187,7 @@
             android:layout_width="match_parent"
             android:layout_height="23dp"
             android:layout_marginTop="2dp"
-            android:text="更新" />
+            android:text="@string/overlay_update" />
 
         <TextView
             android:id="@+id/overlay_btn_pause"
@@ -196,7 +196,7 @@
             android:layout_height="23dp"
             android:layout_marginTop="2dp"
             android:background="@drawable/overlay_action_stop_bg"
-            android:text="停止" />
+            android:text="@string/overlay_stop" />
 
         <TextView
             android:id="@+id/overlay_btn_close"
@@ -204,6 +204,6 @@
             android:layout_width="match_parent"
             android:layout_height="23dp"
             android:layout_marginTop="2dp"
-            android:text="关闭" />
+            android:text="@string/overlay_close" />
     </LinearLayout>
 </LinearLayout>

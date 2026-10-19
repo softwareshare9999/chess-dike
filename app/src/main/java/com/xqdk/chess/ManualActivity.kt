@@ -16,7 +16,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import com.xqdk.chess.i18n.LocaleAwareActivity
 import com.xqdk.chess.adapters.HistoryAndTrendAdapter
 import com.xqdk.chess.utils.CopyAssetsUtil
 import com.xqdk.chess.utils.PathUtil
@@ -33,7 +33,7 @@ import java.io.File
 import java.io.FileInputStream
 
 
-class ManualActivity() : AppCompatActivity(), ControllerListener,
+class ManualActivity() : LocaleAwareActivity(), ControllerListener,
     View.OnClickListener {
 
     private val PREFS_NAME = "com.xqdk.chess.manual.preferences"
@@ -100,7 +100,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
         soundPlayer = SoundPlayer(this, controller)
 
         // init status text
-        setStatusText("未加载棋谱")
+        setStatusText(getString(R.string.manual_not_loaded))
 
         // run initManual() after delaying 500ms
         Handler(Looper.getMainLooper()).postDelayed({
@@ -126,8 +126,8 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             // create a waiting dialog
             val builder = AlertDialog.Builder(this)
             builder.setCancelable(false)
-            builder.setTitle("初始化中")
-            builder.setMessage("初次运行，正在初始化棋谱，时间较长(>30s)，请耐心等待...")
+            builder.setTitle(getString(R.string.manual_init_title))
+            builder.setMessage(getString(R.string.manual_init_message))
             waitingDialog = builder.create()
             waitingDialog.show()
 
@@ -152,7 +152,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
                 runOnUiThread {
                     setFirstRunVersion(currentVersion)
                     waitingDialog.dismiss()
-                    Toast.makeText(this, "初始化完成", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.manual_init_done), Toast.LENGTH_SHORT).show()
                 }
             }.start()
         }
@@ -216,27 +216,27 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
                 saveThenExit();
             }
             binding.choice1bt -> {
-                setStatusText("选择分支1")
+                setStatusText(getString(R.string.manual_select_branch_n, 1))
                 hideAllChoiceBts()
                 controller.selectBranch(0)
             }
             binding.choice2bt -> {
-                setStatusText("选择分支2")
+                setStatusText(getString(R.string.manual_select_branch_n, 2))
                 hideAllChoiceBts()
                 controller.selectBranch(1)
             }
             binding.choice3bt -> {
-                setStatusText("选择分支3")
+                setStatusText(getString(R.string.manual_select_branch_n, 3))
                 hideAllChoiceBts()
                 controller.selectBranch(2)
             }
             binding.choice4bt -> {
-                setStatusText("选择分支4")
+                setStatusText(getString(R.string.manual_select_branch_n, 4))
                 hideAllChoiceBts()
                 controller.selectBranch(3)
             }
             binding.choice5bt -> {
-                setStatusText("选择分支5")
+                setStatusText(getString(R.string.manual_select_branch_n, 5))
                 hideAllChoiceBts()
                 controller.selectBranch(4)
             }
@@ -278,7 +278,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
                         loadManualFromFile(it)
                     }
                 } else {
-                    Toast.makeText(this, "您未选取任何文件", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.manual_no_file), Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -311,10 +311,10 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             binding.textViewNote.text = controller.manual.annotation
 
             hideAllChoiceBts()
-            var hint = "棋谱加载成功" + "," + controller.getFirstMoveColor()
+            var hint = getString(R.string.manual_load_ok) + "," + controller.getFirstMoveColor()
             binding.statustv.text = hint
         } else {
-            binding.statustv.text = "棋谱加载失败"
+            binding.statustv.text = getString(R.string.manual_load_fail)
         }
     }
 

@@ -20,7 +20,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
+import com.xqdk.chess.i18n.LocaleAwareActivity
 import androidx.core.content.ContextCompat
 import com.xqdk.chess.R
 import com.xqdk.chess.assist.ScreenAssistService
@@ -29,7 +29,7 @@ import com.xqdk.chess.assist.ScreenAssistService
  * 连线功能主界面：授权（悬浮窗/通知/录屏）→ 启动识别服务。
  * 棋盘识别全自动（YOLO 检测，免校准），此页只负责权限与启停。
  */
-class AssistActivity : AppCompatActivity() {
+class AssistActivity : LocaleAwareActivity() {
 
     private var captureIntentCode = -1
     private var captureIntentData: Intent? = null
@@ -75,9 +75,9 @@ class AssistActivity : AppCompatActivity() {
             captureIntentCode = result.resultCode
             captureIntentData = result.data
             startCaptureService()
-            Toast.makeText(this, "录屏授权成功，识别服务已启动", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.assist_capture_ok), Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(this, "未授予录屏权限，无法识别", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.assist_capture_denied), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -99,9 +99,10 @@ class AssistActivity : AppCompatActivity() {
         tvStatus = findViewById(R.id.tv_auto_status)
 
         // 悬浮窗主题初始显示（持久化值）
-        btnOverlayTheme.text = "④ 悬浮窗主题：" + OverlayTheme.fromKey(
-            com.xqdk.chess.assist.AssistConfig(this).overlayTheme
-        ).label
+        btnOverlayTheme.text = getString(
+            R.string.assist_btn_theme,
+            OverlayTheme.fromKey(com.xqdk.chess.assist.AssistConfig(this).overlayTheme).label(this),
+        )
         btnOverlayTheme.setOnClickListener {
             // 循环切换：持久化 + 已建面板即时换肤（未启动时下次启动生效）
             val cur = OverlayTheme.fromKey(
@@ -109,7 +110,7 @@ class AssistActivity : AppCompatActivity() {
             )
             val next = themeOrder[(themeOrder.indexOf(cur) + 1) % themeOrder.size]
             service?.applyOverlayTheme(next)
-            btnOverlayTheme.text = "④ 悬浮窗主题：" + next.label
+            btnOverlayTheme.text = getString(R.string.assist_btn_theme, next.label(this))
         }
 
         btnOverlay.setOnClickListener {
@@ -179,19 +180,19 @@ class AssistActivity : AppCompatActivity() {
 
     private fun refreshStatus() {
         val overlayOk = Settings.canDrawOverlays(this)
-        setTextIfChanged(btnOverlay, if (overlayOk) "① 悬浮窗权限：已授权 ✓" else "① 授予悬浮窗权限")
+        setTextIfChanged(btnOverlay, if (overlayOk) getString(R.string.assist_btn_overlay_ok) else getString(R.string.assist_btn_overlay))
         val notifOk = Build.VERSION.SDK_INT < 33 ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
                 PackageManager.PERMISSION_GRANTED
-        setTextIfChanged(btnNotify, if (notifOk) "② 通知权限：已就绪 ✓" else "② 允许通知（前台服务提示）")
+        setTextIfChanged(btnNotify, if (notifOk) getString(R.string.assist_btn_notify_ok) else getString(R.string.assist_btn_notify_hint))
         btnNotify.isEnabled = !notifOk && Build.VERSION.SDK_INT >= 33
 
         val svc = service
         val running = svc?.isCapturing() == true
-        setTextIfChanged(btnStartCapture, if (running) "③ 屏幕识别运行中 ✓" else "③ 开始屏幕识别（全自动识别棋盘）")
+        setTextIfChanged(btnStartCapture, if (running) getString(R.string.assist_btn_capture_running) else getString(R.string.assist_btn_capture))
         setTextIfChanged(tvStatus, when {
-            !running -> "状态：未启动，请点击③授权录屏"
-            else -> "状态：${svc!!.getStatusText()}"
+            !running -> getString(R.string.assist_status_need_capture)
+            else -> getString(R.string.assist_status_running, svc!!.getStatusText())
         })
     }
 }
