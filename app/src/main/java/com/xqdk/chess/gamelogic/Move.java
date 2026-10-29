@@ -9,6 +9,57 @@ import java.util.HashMap;
 public class Move implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 着法记号取词器：把「棋子名 / 进退平 / 前后中 / 数字」交给调用方本地化。
+     * 默认实现为中文记号（与历史输出逐字节一致）；界面语言为越南语时由
+     * com.xqdk.chess.i18n.MoveNotation 安装对应实现。
+     */
+    public interface ChsTokens {
+        String pieceName(int piece);
+        String actionFlat();
+        String actionAdvance();
+        String actionRetreat();
+        String prefixFront();
+        String prefixBack();
+        String prefixMid();
+        String unknown();
+        String redNumeral(int n);
+        String blackNumeral(int n);
+    }
+
+    /** 默认中文记号：字面量与历史实现完全一致（含黑方阿拉伯数字） */
+    public static final ChsTokens ZH_TOKENS = new ChsTokens() {
+        @Override public String pieceName(int piece) {
+            Character c = Piece.pieceNameMap.get(piece);
+            return c == null ? "" : String.valueOf(c);
+        }
+        @Override public String actionFlat() { return "平"; }
+        @Override public String actionAdvance() { return "进"; }
+        @Override public String actionRetreat() { return "退"; }
+        @Override public String prefixFront() { return "前"; }
+        @Override public String prefixBack() { return "后"; }
+        @Override public String prefixMid() { return "中"; }
+        @Override public String unknown() { return "未知动作"; }
+        @Override public String redNumeral(int n) { return arabicToChineseMap.get(n); }
+        @Override public String blackNumeral(int n) { return String.format("%d", n); }
+    };
+
+    /** 全局记号器（进程级；界面语言切换时由 MoveNotation 重装） */
+    private static volatile ChsTokens tokens = ZH_TOKENS;
+
+    public static void setChsTokens(ChsTokens t) {
+        tokens = (t == null) ? ZH_TOKENS : t;
+    }
+
+    public static ChsTokens getChsTokens() {
+        return tokens;
+    }
+
+    /** 本实例使用的记号器快照（避免 getChsString 内部多次读到不同的语言） */
+    private ChsTokens chsTokens = ZH_TOKENS;
+
+    { chsTokens = tokens; }
+
     public Board board = null;
 
     public Position fromPosition;
@@ -118,35 +169,40 @@ public class Move implements Serializable {
     * 5. 对于红字移动，使用中文的数字；对于黑子移动，使用阿拉伯数字
     * 6. 还需要处理同一列有相同的棋子，使用前后来区分，比如前炮退二，后炮进二？？
     * https://www.xqbase.com/protocol/cchess_move.htm
+    *
+    * 国际化：所有字面记号经 chsTokens 取词。默认记号器即中文（行为与历史输出
+    * 逐字节一致），界面语言切换时由调用方安装对应语言的记号器（见
+    * com.xqdk.chess.i18n.MoveNotation），使着法描述随应用语言变化。
      */
     public String getChsString(){
+        ChsTokens tk = chsTokens;
         if(board == null){
             // depends on board status
-            return "未知动作";
+            return tk.unknown();
         }
         int piece = board.getPieceByPosition(fromPosition);
         if(Piece.isValid(piece)) {
-            char name = Piece.pieceNameMap.get(piece);
+            String name = tk.pieceName(piece);
             String num1, action, num2;
 
             if(Piece.isRed(piece)) {
-                num1 = arabicToChineseMap.get(9 - fromPosition.x);
+                num1 = tk.redNumeral(9 - fromPosition.x);
 
-                action = "平";
+                action = tk.actionFlat();
                 // 3.对于走直线的棋子，需要考虑是进退（最后一个数字是纵坐标的差值），还是平移（最后一个数字是目标位置的横坐标）
-                num2 = arabicToChineseMap.get(abs(toPosition.y - fromPosition.y));
+                num2 = tk.redNumeral(abs(toPosition.y - fromPosition.y));
                 if(toPosition.y > fromPosition.y){
-                    action = "退";
+                    action = tk.actionRetreat();
                 } else if(toPosition.y < fromPosition.y){
-                    action = "进";
+                    action = tk.actionAdvance();
                 } else {
                     // 3.对于走直线的棋子，需要考虑是进退（最后一个数字是纵坐标的差值），还是平移（最后一个数字是目标位置的横坐标）
-                    num2 = arabicToChineseMap.get(9 - toPosition.x);
+                    num2 = tk.redNumeral(9 - toPosition.x);
                 }
 
                 if(Piece.isDiagonalPiece(piece)) {
                     // 4. 对于走斜线的棋子（马、相、士），需要考虑是进退，最后一个数字是目标位置的横坐标
-                    num2 = arabicToChineseMap.get(9 - toPosition.x);
+                    num2 = tk.redNumeral(9 - toPosition.x);
                 }
 
                 // 6.还需要处理同一列有相同的棋子，使用前后来区分，比如前炮退二，后炮进二.
@@ -157,23 +213,23 @@ public class Move implements Serializable {
                     return multiple + name + action + num2;
                 }
             } else if(Piece.isBlack(piece)) {
-                num1 = String.format("%d", fromPosition.x + 1);
+                num1 = tk.blackNumeral(fromPosition.x + 1);
 
-                action = "平";
+                action = tk.actionFlat();
                 // 3.对于走直线的棋子，需要考虑是进退（最后一个数字是纵坐标的差值），还是平移（最后一个数字是目标位置的横坐标）
-                num2 = String.format("%d", abs(toPosition.y - fromPosition.y));
+                num2 = tk.blackNumeral(abs(toPosition.y - fromPosition.y));
                 if(toPosition.y > fromPosition.y){
-                    action = "进";
+                    action = tk.actionAdvance();
                 } else if(toPosition.y < fromPosition.y){
-                    action = "退";
+                    action = tk.actionRetreat();
                 } else {
                     // 3.对于走直线的棋子，需要考虑是进退（最后一个数字是纵坐标的差值），还是平移（最后一个数字是目标位置的横坐标）
-                    num2 = String.format("%d", toPosition.x + 1);
+                    num2 = tk.blackNumeral(toPosition.x + 1);
                 }
 
                 if(Piece.isDiagonalPiece(piece)) {
                     // 4. 对于走斜线的棋子（马、相、士），需要考虑是进退，最后一个数字是目标位置的横坐标
-                    num2 = String.format("%d", toPosition.x + 1);
+                    num2 = tk.blackNumeral(toPosition.x + 1);
                 }
 
                 // 6.还需要处理同一列有相同的棋子，使用前后来区分，比如前炮退二，后炮进二.
@@ -185,7 +241,7 @@ public class Move implements Serializable {
                 }
             }
         }
-        return "未知动作";
+        return tk.unknown();
     }
 
     /*
@@ -226,12 +282,13 @@ public class Move implements Serializable {
             // 没有重复的子
             return null;
         }
+        ChsTokens tk = chsTokens;
         if(piece != Piece.WBING && piece != Piece.BZU) {
             // 非兵卒，这时count只能为2
             if(index == 1) {
-                return "前";
+                return tk.prefixFront();
             } else {
-                return "后";
+                return tk.prefixBack();
             }
         }
 
@@ -244,13 +301,13 @@ public class Move implements Serializable {
 
         // 三个以下兵在一条纵线上：用“前”、“中”和“后”来区别；
         if(index == 1 && count <=3) {
-            return "前";
+            return tk.prefixFront();
         }
         if(index == count && count <=3) {
-            return "后";
+            return tk.prefixBack();
         }
         if(index == 2 && count ==3) {
-            return "中";
+            return tk.prefixMid();
         }
         // 三个以上兵在一条纵线上：最前面的兵用“一”代替“前”，以后依次是“二”、“三”、“四”和“五”；
         if(Piece.isRed(piece)){

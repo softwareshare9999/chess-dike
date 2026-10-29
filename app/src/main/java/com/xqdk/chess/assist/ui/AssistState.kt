@@ -19,7 +19,12 @@ enum class AssistState {
     ERROR,
 }
 
-/** 服务状态文案 → 点阵语义状态（纯函数，无 Android 依赖） */
+/** 服务状态文案 → 点阵语义状态（纯函数，无 Android 依赖）。
+ *
+ *  优先使用 [fromKind]：服务在 setStatus 时就地标注语义状态，不受界面语言影响。
+ *  [fromStatusText] 保留为关键词回退（仅在拿不到 kind 时使用），其关键词是中文，
+ *  因此只对中文文案可靠——越南语等译文由 [fromKind] 覆盖。
+ */
 object AssistStateMap {
 
     /** 异常类关键词：引擎异常/初始化失败/识别不稳定（警示红） */
@@ -30,6 +35,9 @@ object AssistStateMap {
 
     /** 识别进行中：点阵进入琥珀逐点行波 */
     private val WAVE_WORDS = listOf("识别中", "正在识别", "识别棋盘")
+
+    /** 权威路径：服务显式标注的语义状态，与语言无关。 */
+    fun fromKind(kind: AssistState): AssistState = kind
 
     fun fromStatusText(text: String): AssistState = when {
         ERROR_WORDS.any { text.contains(it) } -> AssistState.ERROR

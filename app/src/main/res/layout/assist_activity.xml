@@ -48,7 +48,7 @@
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="待授权"
+                android:text="@string/assist_step_pending"
                 android:textColor="@color/xq_muted"
                 android:textSize="12sp"
                 tools:ignore="HardcodedText" />
@@ -104,20 +104,20 @@
                 <TextView
                     android:id="@+id/step_overlay_title"
                     style="@style/StepTitle"
-                    android:text="悬浮窗权限"
+                    android:text="@string/assist_perm_overlay_title"
                     tools:ignore="HardcodedText" />
 
                 <TextView
                     android:id="@+id/step_overlay_hint"
                     style="@style/StepHint"
-                    android:text="用于在其他应用上方显示走法面板"
+                    android:text="@string/assist_perm_overlay_hint"
                     tools:ignore="HardcodedText" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/step_overlay_chip"
                 style="@style/StepChip"
-                android:text="去授予"
+                android:text="@string/assist_step_grant"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
 
@@ -149,20 +149,20 @@
                 <TextView
                     android:id="@+id/step_notify_title"
                     style="@style/StepTitle"
-                    android:text="通知权限"
+                    android:text="@string/assist_perm_notify_title"
                     tools:ignore="HardcodedText" />
 
                 <TextView
                     android:id="@+id/step_notify_hint"
                     style="@style/StepHint"
-                    android:text="Android 13+ 前台服务需要"
+                    android:text="@string/assist_perm_notify_hint"
                     tools:ignore="HardcodedText" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/step_notify_chip"
                 style="@style/StepChip"
-                android:text="去授予"
+                android:text="@string/assist_step_grant"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
 
@@ -192,20 +192,20 @@
                 <TextView
                     android:id="@+id/step_capture_title"
                     style="@style/StepTitle"
-                    android:text="屏幕录制"
+                    android:text="@string/assist_perm_capture_title"
                     tools:ignore="HardcodedText" />
 
                 <TextView
                     android:id="@+id/step_capture_hint"
                     style="@style/StepHint"
-                    android:text="点击下方按钮时按需申请，全程本地处理"
+                    android:text="@string/assist_perm_capture_hint"
                     tools:ignore="HardcodedText" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/step_capture_chip"
                 style="@style/StepChip"
-                android:text="按需"
+                android:text="@string/assist_step_ondemand"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
 
@@ -217,7 +217,7 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="16dp"
-            android:text="开始屏幕识别"
+            android:text="@string/assist_start_capture"
             tools:ignore="HardcodedText" />
 
         <!-- ===== 设置（两项，与现有配置键对应） ===== -->
@@ -227,7 +227,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
             android:letterSpacing="0.08"
-            android:text="设置"
+            android:text="@string/assist_settings"
             android:textColor="@color/xq_muted"
             android:textSize="12sp"
             android:textStyle="bold"
@@ -245,7 +245,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="悬浮窗主题"
+                android:text="@string/assist_theme_label"
                 android:textColor="@color/xq_ink_text"
                 android:textSize="13sp"
                 tools:ignore="HardcodedText" />
@@ -255,7 +255,7 @@
                 style="@style/ValueChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="深色玻璃"
+                android:text="@string/theme_dark_glass"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
 
@@ -272,7 +272,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="识别引擎"
+                android:text="@string/assist_engine_label"
                 android:textColor="@color/xq_ink_text"
                 android:textSize="13sp"
                 tools:ignore="HardcodedText" />
@@ -288,7 +288,7 @@
                     style="@style/EngineChip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ONNX 角点式"
+                    android:text="@string/assist_engine_onnx_short"
                     tools:ignore="HardcodedText" />
 
                 <RadioButton
@@ -297,7 +297,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="YOLO 检测式"
+                    android:text="@string/assist_engine_yolo_short"
                     tools:ignore="HardcodedText" />
             </RadioGroup>
         </LinearLayout>
@@ -315,7 +315,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="思考制式"
+                android:text="@string/assist_think_mode_label"
                 android:textColor="@color/xq_ink_text"
                 android:textSize="13sp"
                 tools:ignore="HardcodedText" />
@@ -331,7 +331,7 @@
                     style="@style/EngineChip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="深度制"
+                    android:text="@string/assist_think_depth"
                     tools:ignore="HardcodedText" />
 
                 <RadioButton
@@ -340,7 +340,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="时间制"
+                    android:text="@string/assist_think_time"
                     tools:ignore="HardcodedText" />
             </RadioGroup>
         </LinearLayout>
@@ -351,7 +351,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
             android:lineSpacingExtra="2dp"
-            android:text="合规声明：本功能仅通过系统录屏授权做画面识别并显示走法建议，属于象棋学习辅助工具，仅供学习研究，请于获取后24小时内自行删除。不包含自动走子、触摸注入、无障碍服务、Root/Xposed 或读取其他应用数据；对局中的所有着法均由玩家手动操作。"
+            android:text="@string/assist_compliance"
             android:textColor="@color/xq_muted"
             android:textSize="11sp"
             tools:ignore="HardcodedText" />
@@ -378,6 +378,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:text="@string/main_about" />
+
+            <Button
+                android:id="@+id/button_language"
+                style="@style/MainTextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:text="@string/language" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

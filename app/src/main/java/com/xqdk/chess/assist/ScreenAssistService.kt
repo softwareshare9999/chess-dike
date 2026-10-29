@@ -26,6 +26,7 @@ import android.view.WindowManager
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import com.xqdk.chess.R
+import com.xqdk.chess.assist.ui.AssistState
 import com.xqdk.chess.assist.ui.OverlayAction
 import com.xqdk.chess.assist.ui.OverlayModel
 import com.xqdk.chess.assist.ui.OverlayPanelView
@@ -107,7 +108,10 @@ class ScreenAssistService : Service() {
     fun isCapturing(): Boolean = mediaProjection != null && virtualDisplay != null
 
     /** 最近一次状态文本（供连线页显示） */
-    fun getStatusText(): String = lastStatusText
+    fun getStatusText(): String = lastStatusText ?: getString(R.string.status_not_started)
+
+    /** 最近一次状态文案的语义状态（点阵四态）：显式标注，不受界面语言影响 */
+    fun getStatusKind(): AssistState = lastStatusKind
 
     /** 当前识别引擎标识（连线页 onResume 回填 RadioGroup 用：悬浮窗热切换后页面
      *  与服务无推送通道，不回填则单选显示与实际引擎相反，点选反而触发真切换） */
@@ -124,7 +128,7 @@ class ScreenAssistService : Service() {
         overlayPanel = null
         paused = true
         releaseCapture()
-        setStatus("已关闭（识别与录屏均已停止，可在连线页重新启动）")
+        setStatus(getString(R.string.status_closed), AssistState.IDLE)
         stopSelf()
     }
 
@@ -263,7 +267,12 @@ class ScreenAssistService : Service() {
     private val history = ArrayDeque<HistoryEntry>()
 
     /** 引擎强度档位（固定深度，与深度制搜索一致） */
-    private val strengthLevels = listOf("快速·深度12" to 12, "标准·深度20" to 20, "强劲·深度24" to 24)
+    private val strengthLevels: List<Pair<String, Int>>
+        get() = listOf(
+            getString(R.string.strength_fast) to 12,
+            getString(R.string.strength_normal) to 20,
+            getString(R.string.strength_strong) to 24,
+        )
     @Volatile private var strengthIndex = 0
     /** 引擎 Hash 档位（与搜索设置同口径）：从 256 起步循环 */
     private val hashLevels = listOf(256, 512, 1024, 2048)
@@ -271,7 +280,15 @@ class ScreenAssistService : Service() {
     /** 引擎变招路数（MultiPV 1-3，悬浮窗左列"变招档"按钮循环；1 路算力最全） */
     @Volatile private var multiPv: Int = 3
     /** 时间制时长档位（时间制"时间"芯片循环；与 AnalysisEngine 的 500-30000ms 界一致） */
-    private val timeLevels = listOf("1秒" to 1000, "2秒" to 2000, "3秒" to 3000, "5秒" to 5000, "10秒" to 10000, "30秒" to 30000)
+    private val timeLevels: List<Pair<String, Int>>
+        get() = listOf(
+            getString(R.string.time_1s) to 1000,
+            getString(R.string.time_2s) to 2000,
+            getString(R.string.time_3s) to 3000,
+            getString(R.string.time_5s) to 5000,
+            getString(R.string.time_10s) to 10000,
+            getString(R.string.time_30s) to 30000,
+        )
     @Volatile private var timeIndex = 2
     /**
      * 当前思考制式（true=时间制）：悬浮窗深度/时间芯片二选一显示的依据。
@@ -346,8 +363,8 @@ class ScreenAssistService : Service() {
 
     private fun createChannel() {
         val nm = getSystemService(NotificationManager::class.java)
-        val ch = NotificationChannel(CHANNEL_ID, "连线·屏幕识别", NotificationManager.IMPORTANCE_LOW)
-        ch.description = "屏幕识别与悬浮窗指导运行中"
+        val ch = NotificationChannel(CHANNEL_ID, getString(R.string.notif_channel_name), NotificationManager.IMPORTANCE_LOW)
+        ch.description = getString(R.string.notif_channel_desc)
         nm.createNotificationChannel(ch)
     }
 
@@ -360,8 +377,8 @@ class ScreenAssistService : Service() {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         return Notification.Builder(this, CHANNEL_ID)
-            .setContentTitle("象棋迪克·连线识别运行中")
-            .setContentText(contentText ?: "仅识别局面并给出走法建议，不会自动走子")
+            .setContentTitle(getString(R.string.notif_title))
+            .setContentText(contentText ?: getString(R.string.notif_text_default))
             .setSmallIcon(R.drawable.ic_launcher)
             .setOngoing(true)
             .setContentIntent(pi)
@@ -709,7 +726,7 @@ class ScreenAssistService : Service() {
         val yolo = yoloDetector ?: run {
             recMissStreak++
             if (recMissStreak == 1 || recMissStreak % 20 == 0) {
-                setStatus("识别引擎初始化失败：请尝试重启应用（重装可修复）")
+                setStatus(getString(R.string.status_engine_init_fail), AssistState.ERROR)
             }
             return
         }
@@ -728,7 +745,7 @@ class ScreenAssistService : Service() {
             // 裁剪区识别不到（棋盘挪走/被遮挡）：清空会话网格，下一帧回全屏重新定位（自愈）
             sessionGrid = null
             if (recMissStreak == 1 || recMissStreak % 10 == 0) {
-                setStatus("正在识别棋盘…\n请让棋盘完整无遮挡")
+                setStatus(getString(R.string.status_recognizing_board), AssistState.RUNNING_WAVE)
             }
             return
         }
@@ -759,7 +776,7 @@ class ScreenAssistService : Service() {
                     cropUnstableStreak = 0
                 }
                 if (tracker.unstableStreak >= 15) {
-                    setStatus("识别不稳定\n请让棋盘完整无遮挡\n画面稳定后自动恢复")
+                    setStatus(getString(R.string.status_unstable), AssistState.ERROR)
                 }
             }
             BoardTracker.Event.SAME_BOARD -> {
@@ -803,7 +820,7 @@ class ScreenAssistService : Service() {
                 sessionGrid = null
             }
             if (recMissStreak == 1 || recMissStreak % 10 == 0) {
-                setStatus("正在识别棋盘…\n请让棋盘完整无遮挡")
+                setStatus(getString(R.string.status_recognizing_board), AssistState.RUNNING_WAVE)
             }
             return
         }
@@ -847,7 +864,7 @@ class ScreenAssistService : Service() {
             }
             BoardTracker.Event.UNSTABLE -> {
                 if (tracker.unstableStreak >= 15) {
-                    setStatus("识别不稳定\n请让棋盘完整无遮挡\n画面稳定后自动恢复")
+                    setStatus(getString(R.string.status_unstable), AssistState.ERROR)
                 }
             }
             BoardTracker.Event.SAME_BOARD -> {
@@ -884,7 +901,7 @@ class ScreenAssistService : Service() {
             }
             if (!ok) {
                 engineName = ENGINE_YOLO
-                setStatus("ONNX 引擎加载失败\n已回退 YOLO 识别")
+                setStatus(getString(R.string.status_onnx_fail_yolo), AssistState.ERROR)
             }
             Log.i(TAG, "onnx engine: ${if (ok) "ready" else "load failed, fallback to yolo"}")
         }.start()
@@ -969,11 +986,11 @@ class ScreenAssistService : Service() {
             }
             bookMoves = null
             if (!engineReady) {
-                mainHandler.post { setStatus(engineErrorText ?: "引擎预热中…") }
+                mainHandler.post { setStatus(engineErrorText ?: getString(R.string.status_engine_warming)) }
                 return@post
             }
             analysisEngine?.request(fen)
-            if (myTurn) mainHandler.post { setStatus("引擎思考中…") }
+            if (myTurn) mainHandler.post { setStatus(getString(R.string.status_engine_thinking)) }
         }
     }
 
@@ -999,7 +1016,7 @@ class ScreenAssistService : Service() {
         override fun onEngineReady() {
             engineReady = true
             engineErrorText = null
-            setStatus("识别中")
+            setStatus(getString(R.string.overlay_recognizing), AssistState.RUNNING_WAVE)
             scheduleAnalysis()
         }
 
@@ -1031,7 +1048,7 @@ class ScreenAssistService : Service() {
             searchSettled = true
             // 状态文案回"识别中"并渲染（成熟度翻转暂定→定着由渲染体现）；
             // setStatus 内部统一走 postRender 管线，重复 postRender 已合并，无双渲染
-            setStatus("识别中")
+            setStatus(getString(R.string.overlay_recognizing), AssistState.RUNNING_WAVE)
         }
 
         override fun onEngineError(message: String) {
@@ -1041,7 +1058,7 @@ class ScreenAssistService : Service() {
             engineReady = false
             val short = if (message.length > 40) message.take(40) + "…" else message
             engineErrorText = short
-            setStatus("引擎异常：$short")
+            setStatus(getString(R.string.status_engine_error, short), AssistState.ERROR)
         }
     }
 
@@ -1170,7 +1187,7 @@ class ScreenAssistService : Service() {
         when (action) {
             OverlayAction.PAUSE -> {
                 paused = !paused
-                setStatus(if (paused) "已停止指导\n点『继续』恢复" else "继续指导")
+                setStatus(if (paused) getString(R.string.status_paused) else getString(R.string.status_resumed))
             }
             OverlayAction.CLOSE -> {
                 // 关闭悬浮窗：停止录屏、移除面板、停止指导（与录制耦合，之后可在连线页重新授权启动）
@@ -1196,7 +1213,13 @@ class ScreenAssistService : Service() {
                 }
                 postRender()
                 scheduleAnalysis()
-                setStatus("棋局已更新\n现${if (tracker.redGo == mySideIsRed()) "轮到我方走" else "轮到对方走"}")
+                setStatus(
+                    if (tracker.redGo == mySideIsRed()) {
+                        getString(R.string.status_board_updated_me)
+                    } else {
+                        getString(R.string.status_board_updated_opp)
+                    }
+                )
             }
             OverlayAction.CYCLE_STRENGTH -> cycleStrength()
             OverlayAction.CYCLE_TIME -> cycleTime()
@@ -1209,15 +1232,26 @@ class ScreenAssistService : Service() {
                 val want = if (engineName == ENGINE_ONNX) ENGINE_YOLO else ENGINE_ONNX
                 AssistConfig(this).recognizerEngine = want
                 setRecognizerEngine(want)
-                setStatus("切换识别引擎：${if (want == ENGINE_ONNX) "ONNX 角点式" else "YOLO 检测式"}\n切换后重新确认棋盘")
+                setStatus(
+                    if (want == ENGINE_ONNX) {
+                        getString(R.string.status_switch_engine_onnx)
+                    } else {
+                        getString(R.string.status_switch_engine_yolo)
+                    }
+                )
             }
             OverlayAction.CYCLE_MULTIPV -> cycleMultiPv()
             OverlayAction.FLASH_STOP -> {
                 // 闪电出着：引擎思考中打断并立即采纳当前最优；空闲/新局面排队中为 no-op，
                 // 按实际结果提示（无脑提示"已出着"会误导用户等待一个不会来的 bestmove）
                 val flashed = analysisEngine?.flashStop() == true
-                setStatus(if (flashed) "闪电出着：已打断搜索，采纳当前最优"
-                else "闪电出着：当前没有思考中的搜索")
+                setStatus(
+                    if (flashed) {
+                        getString(R.string.status_flash_done)
+                    } else {
+                        getString(R.string.status_flash_idle)
+                    }
+                )
             }
         }
     }
@@ -1228,7 +1262,7 @@ class ScreenAssistService : Service() {
      */
     private fun undoOneStep() {
         if (history.size <= 1) {
-            setStatus("没有可悔的局面（会随对弈自动积累）")
+            setStatus(getString(R.string.status_no_undo))
             return
         }
         history.removeLast()
@@ -1246,7 +1280,7 @@ class ScreenAssistService : Service() {
         if (!manualMode) paused = true
         postRender()
         scheduleAnalysis()
-        setStatus("已悔棋一步\n点『继续』恢复")
+        setStatus(getString(R.string.status_undone))
     }
 
     /**
@@ -1273,12 +1307,12 @@ class ScreenAssistService : Service() {
             // 进入即调度一次分析：识别从未成功时以种子局面进手动模式，不调度则
             // 悬浮窗停在"轮到我方走"无建议，直到用户首次手工操作
             scheduleAnalysis()
-            setStatus("手动模式（再点手动退出）\n点子选中→点目标格=走子\n再点选中子=删除\n『更新棋局』纠正轮次")
+            setStatus(getString(R.string.status_manual_on))
         } else {
             // 退出即恢复自动识别：先"停止"（paused）再进手动编辑的用户，不复位则
             // 帧识别仍被 paused 门闩拦住，下面的承诺落空（悬浮窗永远停在旧局面）
             paused = false
-            setStatus("已退出手动模式\n恢复自动识别")
+            setStatus(getString(R.string.status_manual_off))
         }
         postRender()
     }
@@ -1301,7 +1335,7 @@ class ScreenAssistService : Service() {
             val p = board[y][x]
             manualSelected = null
             if (p == Piece.WSHUAI || p == Piece.BJIANG) {
-                setStatus("手动模式\n帅/将不可删除")
+                setStatus(getString(R.string.status_manual_king))
                 postRender()
                 return
             }
@@ -1319,7 +1353,7 @@ class ScreenAssistService : Service() {
         // 目标格为己方子：实战着法不存在——静默录入会产出"吃掉己子"的少子无规则局面
         // 直接喂引擎（validate 只查数量上限与照面，拦不住）
         if (board[y][x] != Piece.EMPTY && Piece.isRed(board[y][x]) == Piece.isRed(moving)) {
-            setStatus("手动模式\n目标格是己方子，不能走")
+            setStatus(getString(R.string.status_manual_own_piece))
             postRender()
             return
         }
@@ -1359,7 +1393,7 @@ class ScreenAssistService : Service() {
         config.searchDepth = depth
         analysisEngine?.setSearchDepth(depth)
         postRender()
-        setStatus("引擎强度：$name")
+        setStatus(getString(R.string.status_strength, name))
     }
 
     /** Hash 档位循环（256→512→1024→2048），持久化并对下一次搜索生效 */
@@ -1369,7 +1403,7 @@ class ScreenAssistService : Service() {
         config.hashMb = mb
         analysisEngine?.setHash(mb)
         postRender()
-        setStatus("引擎 Hash：${mb}MB")
+        setStatus(getString(R.string.status_hash, mb))
     }
 
     /** 时间制时长档位循环（1→2→3→5→10→30 秒），持久化并对下一次搜索生效 */
@@ -1379,7 +1413,7 @@ class ScreenAssistService : Service() {
         config.searchTimeMs = ms
         analysisEngine?.setSearchMode(AnalysisEngine.SearchMode.TIME, ms)
         postRender()
-        setStatus("思考时长：$name")
+        setStatus(getString(R.string.status_think_time, name))
     }
 
     /**
@@ -1407,15 +1441,17 @@ class ScreenAssistService : Service() {
         analysisEngine?.setMultiPv(multiPv)
         postRender()
         setStatus(
-            if (multiPv == 1) "变招：1 路（算力最全）"
-            else "变招：$multiPv 路（附${multiPv - 1}个备选，算力摊薄）"
+            if (multiPv == 1) getString(R.string.status_multipv_one)
+            else getString(R.string.status_multipv_n, multiPv, multiPv - 1)
         )
     }
 
     /** 我方颜色（随动自动判定：屏幕下方阵营=我方，红在下=我方执红） */
     private fun mySideIsRed(): Boolean = currentOrientation == Orientation.STANDARD
 
-    @Volatile private var lastStatusText = "未启动"
+    @Volatile private var lastStatusText: String? = null
+    /** 最近一次状态文案的语义状态（点阵用）。显式标注，不靠关键词猜译文。 */
+    @Volatile private var lastStatusKind: AssistState = AssistState.IDLE
     /** setStatus 的瞬时提示文案：只在随后一次渲染中生效（此后回到常规状态文案），由主线程消费后清空 */
     @Volatile private var statusOverrideText: String? = null
     /** 最近一次已推送到通知栏的状态文本（通知去重：内容不变不 notify，根因 10） */
@@ -1425,8 +1461,9 @@ class ScreenAssistService : Service() {
      * 状态更新（统一渲染入口，根因 4）：只更新文本 + 走 postRender 管线，不再自己
      * 直接 renderOverlay——与 onSearchDone 等处的 postRender 合并，消灭双渲染。
      */
-    private fun setStatus(text: String) {
+    private fun setStatus(text: String, kind: AssistState = AssistState.RUNNING_STILL) {
         lastStatusText = text
+        lastStatusKind = kind
         statusOverrideText = text
         notifyStatusChanged(text)
         postRender()
@@ -1494,21 +1531,21 @@ class ScreenAssistService : Service() {
 
         // ---- 顶部状态行（语义点 + 次级小字，颜色由主题调色板解析）----
         val (stateText, stateKind) = when {
-            manualMode -> "手动模式" to OverlayStateKind.MANUAL
-            paused -> "已停止" to OverlayStateKind.IDLE
-            engineErrorText != null -> "引擎异常" to OverlayStateKind.ERROR
-            engineReady -> "识别中" to OverlayStateKind.RUNNING
-            else -> "引擎预热中" to OverlayStateKind.WAITING
+            manualMode -> getString(R.string.state_manual) to OverlayStateKind.MANUAL
+            paused -> getString(R.string.state_stopped) to OverlayStateKind.IDLE
+            engineErrorText != null -> getString(R.string.state_engine_error) to OverlayStateKind.ERROR
+            engineReady -> getString(R.string.state_recognizing) to OverlayStateKind.RUNNING
+            else -> getString(R.string.state_warming) to OverlayStateKind.WAITING
         }
 
         // ---- 主状态大字（一眼原则；setStatus 覆盖文案优先，随后一次渲染后失效）----
         val override = statusOverride ?: statusOverrideText
         val headline = when {
             override != null -> override
-            fen.isEmpty() -> "识别中"
-            paused -> "已停止指导"
-            myTurn -> "轮到我方走"
-            else -> "轮到对方走"
+            fen.isEmpty() -> getString(R.string.headline_recognizing)
+            paused -> getString(R.string.headline_paused)
+            myTurn -> getString(R.string.headline_my_turn)
+            else -> getString(R.string.headline_opp_turn)
         }
 
         // 选择当前展示的候选
@@ -1554,18 +1591,19 @@ class ScreenAssistService : Service() {
                     arrowFrom = arrow.first
                     arrowTo = arrow.second
                     val chs = describeSafe(fen, ucci)
-                    candidateText = if (idx > 0) "开局库备选${idx + 1} $chs ✓" else "开局库 $chs ✓"
+                    candidateText = if (idx > 0) getString(R.string.candidate_book_alt, idx + 1, chs)
+                        else getString(R.string.candidate_book, chs)
                     candidateTone = QiTone.GOOD
                     // 库内 vwin/vdraw/vlost 为胜/和/负场数，据此算胜率
                     val total = bd.winRate + bd.drawNum + bd.loseNum
                     if (total > 0) {
-                        advantageText = "胜率约 ${(bd.winRate * 100 / total).toInt()}%"
+                        advantageText = getString(R.string.candidate_winrate, (bd.winRate * 100 / total).toInt())
                         advantageTone = QiTone.GOOD
                     }
                     candidateIndex = idx + 1
                     candidateCount = book.size
                 } else {
-                    candidateText = "轮次可能识别有误\n走一步后自动纠正"
+                    candidateText = getString(R.string.candidate_turn_mismatch)
                     candidateTone = QiTone.WARN
                 }
             }
@@ -1579,19 +1617,22 @@ class ScreenAssistService : Service() {
                     val arrow = ucciToCells(ucci)
                     arrowFrom = arrow.first
                     arrowTo = arrow.second
-                    candidateText = (if (selectedCandidate > 0) "备选${selectedCandidate + 1} $chs" else "建议 $chs") +
-                        if (suggestMature) " ✓" else "（暂定）"
-                    advantageText = "${lineScoreText(line)} 深${line.depth}"
+                    candidateText = (if (selectedCandidate > 0) {
+                            getString(R.string.candidate_alt, selectedCandidate + 1, chs)
+                        } else {
+                            getString(R.string.candidate_suggest, chs)
+                        }) + if (suggestMature) " ✓" else getString(R.string.candidate_tentative)
+                    advantageText = getString(R.string.candidate_depth_score, lineScoreText(line), line.depth)
                     // 色调按我方视角（红方视角分数与我方阵营同向为 GOOD），执黑时不再红优显示"好"色
                     advantageTone = if ((line.redScoreCp >= 0) == mySideIsRed()) QiTone.GOOD else QiTone.BAD
                     candidateIndex = selectedCandidate + 1
                     candidateCount = lines.size
                 } else if (ucci == "(none)") {
                     // 困毙/无着可走：引擎合法返回 (none)，不是识别错误
-                    candidateText = "无可用着法\n（困毙或已无着可走）"
+                    candidateText = getString(R.string.candidate_no_moves)
                     candidateTone = QiTone.WARN
                 } else if (ucci != null) {
-                    candidateText = "轮次可能识别有误\n走一步后自动纠正"
+                    candidateText = getString(R.string.candidate_turn_mismatch)
                     candidateTone = QiTone.WARN
                 }
             }
@@ -1603,14 +1644,14 @@ class ScreenAssistService : Service() {
                 if (fromIsOurs(myU)) {
                     val oppDesc = describeSafe(fen, oppU)
                     val myDesc = describeSafe(AssistBoard.applyUcci(fen, oppU), myU)
-                    candidateText = "若对方走$oppDesc\n我方应$myDesc"
-                    advantageText = "${lineScoreText(line)} 深${line.depth}"
+                    candidateText = getString(R.string.candidate_if_opp, oppDesc, myDesc)
+                    advantageText = getString(R.string.candidate_depth_score, lineScoreText(line), line.depth)
                     // 色调按我方视角（红方视角分数与我方阵营同向为 GOOD），执黑时不再红优显示"好"色
                     advantageTone = if ((line.redScoreCp >= 0) == mySideIsRed()) QiTone.GOOD else QiTone.BAD
                 }
             }
             myTurn && engineReady && fen.isNotEmpty() -> {
-                candidateText = "引擎思考中…"
+                candidateText = getString(R.string.status_engine_thinking)
                 candidateTone = QiTone.WARN
             }
         }
@@ -1618,7 +1659,7 @@ class ScreenAssistService : Service() {
         panel.render(OverlayModel(
             stateText = stateText,
             stateKind = stateKind,
-            occludedText = if (panelOccluded) "挡住棋盘，建议移开" else null,
+            occludedText = if (panelOccluded) getString(R.string.overlay_occluded) else null,
             headlineText = headline,
             advantageText = advantageText,
             advantageTone = advantageTone,
@@ -1646,7 +1687,8 @@ class ScreenAssistService : Service() {
 
     private fun lineScoreText(line: AnalysisLine): String {
         val adv = line.scoreText()
-        return if (line.redScoreCp >= 0) "红方优势 $adv" else "红方劣势 $adv"
+        return if (line.redScoreCp >= 0) getString(R.string.red_advantage, adv)
+        else getString(R.string.red_disadvantage, adv)
     }
 
     /** ucci(4字符) -> 内部 (x,y) 起止 */
@@ -1709,7 +1751,7 @@ class ScreenAssistService : Service() {
                 if (mediaProjection != null) {
                     releaseCapture()
                     paused = true
-                    setStatus("录屏已被系统停止\n可在连线页重新授权启动")
+                    setStatus(getString(R.string.status_capture_stopped))
                 }
             }
         }

@@ -33,8 +33,8 @@ class OverlayModel(
     val stateKind: OverlayStateKind = OverlayStateKind.IDLE,
     /** 遮挡提醒行：悬浮窗盖住已定位棋盘时显示；null 隐藏（独立小行，不挤占状态行） */
     val occludedText: String? = null,
-    /** 主状态大字：轮到我方走 / 已停止指导 / 引擎异常…（含 setStatus 覆盖文案） */
-    val headlineText: String = "识别中",
+    /** 主状态大字：轮到我方走 / 已停止指导 / 引擎异常…（含 setStatus 覆盖文案）；null 时不设文字 */
+    val headlineText: String? = null,
     /** 优势行：红方优势 +0.8 / 胜率约 4%；null 隐藏 */
     val advantageText: String? = null,
     val advantageTone: QiTone = QiTone.NONE,
@@ -171,7 +171,7 @@ class OverlayPanelView @JvmOverloads constructor(
 
     private fun resetCloseState() {
         closeArmed = false
-        btnClose.text = "关闭"
+        btnClose.text = context.getString(R.string.overlay_close)
         btnClose.setTextColor(closeNormalColor)
     }
 
@@ -225,7 +225,7 @@ class OverlayPanelView @JvmOverloads constructor(
         btnClose.setOnClickListener {
             if (!closeArmed) {
                 closeArmed = true
-                btnClose.text = "确认?" // 23dp 网格按钮，确认文案需紧凑
+                btnClose.text = context.getString(R.string.confirm_q) // 23dp 网格按钮，确认文案需紧凑
                 btnClose.setTextColor(palette.danger)
                 postDelayed(closeReset, 3000)
             } else {
@@ -264,8 +264,8 @@ class OverlayPanelView @JvmOverloads constructor(
             occluded.setTextColor(palette.amber)
         }
 
-        // 主状态大字
-        status.text = model.headlineText
+        // 主状态大字（null 表示尚未产生文案：保留上一帧，避免闪空）
+        model.headlineText?.let { status.text = it }
         status.setTextColor(palette.headline)
 
         // 优势行
@@ -314,17 +314,21 @@ class OverlayPanelView @JvmOverloads constructor(
         // 深度/时间芯片按思考制式互斥显示（连线页切换，depthText/timeText 至多一个非 null）
         btnStrength.visibility = if (model.depthText != null) View.VISIBLE else View.GONE
         btnTime.visibility = if (model.timeText != null) View.VISIBLE else View.GONE
-        setChipText(btnStrength, "深度", model.depthText)
-        setChipText(btnTime, "时间", model.timeText)
-        setChipText(btnHash, "哈希", model.hashText)
-        setChipText(btnEngine, "引擎", model.engineText)
-        val pauseText = if (model.paused) "继续" else "停止"
+        setChipText(btnStrength, context.getString(R.string.overlay_depth), model.depthText)
+        setChipText(btnTime, context.getString(R.string.overlay_time), model.timeText)
+        setChipText(btnHash, context.getString(R.string.overlay_hash), model.hashText)
+        setChipText(btnEngine, context.getString(R.string.overlay_engine), model.engineText)
+        val pauseText = if (model.paused) {
+            context.getString(R.string.overlay_resume)
+        } else {
+            context.getString(R.string.overlay_stop)
+        }
         if (btnPause.text != pauseText) btnPause.text = pauseText
 
         // 变招档位按钮："N变"（档位缓存比对，文本仅在变化时构造）
         if (lastMultiPv != model.multiPv) {
             lastMultiPv = model.multiPv
-            btnMultiPv.text = "${model.multiPv}变"
+            btnMultiPv.text = context.getString(R.string.overlay_multipv_n, model.multiPv)
         }
 
         chess.pieces = model.pieces

@@ -1,12 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Default language: Vietnamese (Tiếng Việt).
+    Chinese lives in values-zh-rCN/strings.xml; the app defaults to Vietnamese and
+    the user can switch language from the connection (连线) page.
+    Keep the two files key-for-key in sync.
+-->
 <resources>
-    <string name="app_name">象棋迪克</string>
+    <string name="app_name">Tượng Kỳ Dick</string>
 
-    <!-- 主页门面（美学终稿 §3.1）：hero 品牌句唯一出场位，无标点 -->
-    <string name="main_hero">看穿这一局</string>
-    <string name="main_help">帮助</string>
-    <string name="main_about">关于</string>
+    <!-- ===== Common ===== -->
+    <string name="ok">OK</string>
+    <string name="cancel">Hủy</string>
+    <string name="confirm">Xác nhận</string>
+    <string name="close">Đóng</string>
+    <string name="confirm_q">Xác nhận?</string>
+    <string name="i_know">Đã hiểu</string>
 
-    <string name="engine_terminated">Engine terminated</string>
-    <string name="uci_protocol_error">UCI protocol error</string>
-    <string name="failed_to_start_engine">Failed to start engine</string>
+    <!-- ===== Language ===== -->
+    <string name="language">Ngôn ngữ</string>
+    <string name="language_vietnamese">Tiếng Việt</string>
+    <string name="language_chinese">Tiếng Trung</string>
+    <string name="language_changed_restart">Đã đổi ngôn ngữ. Khởi động lại màn hình để áp dụng.</string>
+
+    <!-- ===== Main page (connection / assist) ===== -->
+    <string name="main_hero">Nhìn thấu ván này</string>
+    <string name="main_help">Trợ giúp</string>
+    <string name="main_about">Giới thiệu</string>
+
+    <string name="disclaimer_title">Tuyên bố miễn trừ</string>
+    <string name="disclaimer_agree">Đồng ý và tiếp tục</string>
+    <string name="disclaimer_disagree">Không đồng ý và thoát</string>
+    <string name="disclaimer_body">Phần mềm này (Tượng Kỳ Dick) là công cụ hỗ trợ học tập cờ tướng, chỉ dùng cho học tập cá nhân, ôn tập và giao lưu kỹ thuật. Vui lòng đọc kỹ các điều khoản sau trước khi sử dụng:\n\n1. Phần mềm chỉ nhận diện màn hình qua quyền ghi màn hình hệ thống và hiển thị gợi ý nước đi trên cửa sổ nổi; không có tự động đi quân, tiêm cảm ứng, dịch vụ trợ năng, Root/Xposed. Mọi nước đi do người chơi thao tác thủ công.\n\n2. Nghiêm cấm dùng phần mềm này cho bất kỳ giải đấu chính thức, ván có hệ số Elo, nền tảng cờ mạng hoặc cờ bạc nào vi phạm quy tắc nền tảng và pháp luật; mọi hậu quả do người dùng tự chịu.\n\n3. Chỉ dùng để học tập nghiên cứu; vui lòng tự xóa trong vòng 24 giờ sau khi nhận được.\n\n4. Phần mềm được cung cấp “nguyên trạng”, không bảo đảm tính sẵn sàng hay độ chính xác, và không chịu trách nhiệm với bất kỳ thiệt hại trực tiếp hay gián tiếp nào do việc sử dụng.\n\nNhấn “Đồng ý và tiếp tục” nghĩa là bạn đã đọc, hiểu và đồng ý với toàn bộ các điều khoản trên.</string>
+    <string name="credits_body">Ghi nhận:\n· Dự án dựa trên mã nguồn mở “象棋鱼” (tác giả zfdang, GitHub: zfdang/chinese-chess-android);\n· Trọng số nhận diện quân YOLO từ dự án Vincentzyx/VinXiangQi;\n· Engine nhận diện ONNX hai bước (RTMPose góc + phân loại Swin) từ dự án Shirakawa-Kotone/chinese-chess-helper;\n· Nền tảng engine: đội Pikafish và DroidFish (Peter Österlund), giấy phép GPL-3.0.</string>
+    <string name="about_title">Giới thiệu · Tượng Kỳ Dick</string>
+    <string name="about_body">Tượng Kỳ Dick XQDK v%1$s\n\nTính năng nổi bật:\n· Liên kết AI: nhận diện màn hình ONNX góc (chính) / YOLO không cần hiệu chỉnh, tự nhận hướng, gợi ý nước đi thời gian thực trên cửa sổ nổi, tra cứu khai cuộc, đa ứng viên và chế độ chỉnh tay khẩn cấp (chỉ nhận diện và gợi ý, không tự đi quân);\n· Tích hợp engine Pikafish và thư viện khai cuộc Cát Khố, chọn chế độ tính theo độ sâu hoặc theo thời gian.\n\n</string>
+
+    <!-- ===== Assist page: buttons and steps ===== -->
+    <string name="assist_title">Tượng Kỳ Dick · Hướng dẫn nhận diện liên kết</string>
+    <string name="assist_btn_overlay">① Cấp quyền cửa sổ nổi</string>
+    <string name="assist_btn_overlay_ok">① Quyền cửa sổ nổi: đã cấp ✓</string>
+    <string name="assist_btn_notify">② Quyền thông báo (Android 13+)</string>
+    <string name="assist_btn_notify_hint">② Cho phép thông báo (dịch vụ nền trước)</string>
+    <string name="assist_btn_notify_ok">② Quyền thông báo: đã sẵn sàng ✓</string>
+    <string name="assist_btn_capture">③ Bắt đầu nhận diện màn hình (tự động toàn bộ)</string>
+    <string name="assist_btn_capture_running">③ Đang nhận diện màn hình ✓</string>
+    <string name="assist_btn_theme">④ Giao diện cửa sổ nổi: %1$s</string>
+    <string name="assist_start_capture">Bắt đầu nhận diện màn hình</string>
+    <string name="assist_stop_guide">Dừng hướng dẫn</string>
+    <string name="assist_engine_onnx">⑤ Nhận diện: ONNX góc (mặc định, tổng quát tốt)</string>
+    <string name="assist_engine_yolo">⑤ Nhận diện: YOLO (dự phòng)</string>
+
+    <string name="assist_step_ready">Sẵn sàng</string>
+    <string name="assist_step_grant">Cấp quyền</string>
+    <string name="assist_step_running">Đang chạy</string>
+    <string name="assist_step_ondemand">Theo nhu cầu</string>
+    <string name="assist_step_pending">Chờ cấp quyền</string>
+
+    <string name="assist_perm_overlay_title">Quyền cửa sổ nổi</string>
+    <string name="assist_perm_overlay_ok">Đã cấp · có thể thay đổi trong cài đặt hệ thống</string>
+    <string name="assist_perm_overlay_hint">Dùng để hiển thị bảng gợi ý trên ứng dụng khác</string>
+    <string name="assist_perm_notify_title">Quyền thông báo</string>
+    <string name="assist_perm_notify_ok">Thông báo dịch vụ nền trước hoạt động bình thường</string>
+    <string name="assist_perm_notify_hint">Android 13+ yêu cầu dịch vụ nền trước</string>
+    <string name="assist_perm_capture_title">Ghi màn hình</string>
+    <string name="assist_perm_capture_hint">Xin quyền khi nhấn nút bên dưới, xử lý hoàn toàn cục bộ</string>
+    <string name="assist_settings">Cài đặt</string>
+    <string name="assist_theme_label">Giao diện cửa sổ nổi</string>
+    <string name="assist_engine_label">Engine nhận diện</string>
+    <string name="assist_engine_onnx_short">ONNX góc</string>
+    <string name="assist_engine_yolo_short">YOLO</string>
+    <string name="assist_think_mode_label">Chế độ tính</string>
+    <string name="assist_think_depth">Theo độ sâu</string>
+    <string name="assist_think_time">Theo thời gian</string>
+    <string name="assist_compliance">Tuyên bố tuân thủ: tính năng này chỉ nhận diện hình ảnh qua quyền ghi màn hình hệ thống và hiển thị gợi ý nước đi, thuộc công cụ hỗ trợ học cờ tướng, chỉ dùng cho học tập nghiên cứu, vui lòng tự xóa trong 24 giờ sau khi nhận. Không bao gồm tự động đi quân, tiêm cảm ứng, dịch vụ trợ năng, Root/Xposed hay đọc dữ liệu ứng dụng khác; mọi nước đi trong ván đều do người chơi thao tác thủ công.</string>
+    <string name="overlay_multipv_n_placeholder">3 biến</string>
+    <string name="version_label">Phiên bản:</string>
+    <string name="assist_step_recognizing">Đang nhận diện</string>
+
+    <string name="assist_capture_ok">Cấp quyền ghi màn hình thành công, dịch vụ nhận diện đã khởi động</string>
+    <string name="assist_capture_denied">Chưa cấp quyền ghi màn hình, không thể nhận diện</string>
+    <string name="assist_need_overlay_first">Vui lòng hoàn tất ① cấp quyền cửa sổ nổi trước khi bắt đầu nhận diện</string>
+
+    <!-- ===== Overlay panel ===== -->
+    <string name="overlay_recognizing">Đang nhận diện</string>
+    <string name="overlay_occluded">Che khuất bàn cờ, nên di chuyển</string>
+    <string name="overlay_change_move">Đổi nước</string>
+    <string name="overlay_multipv_n">%1$d biến</string>
+    <string name="overlay_undo">Hối kỳ</string>
+    <string name="overlay_manual">Chỉnh tay</string>
+    <string name="overlay_depth">Độ sâu</string>
+    <string name="overlay_time">Thời gian</string>
+    <string name="overlay_hash">Hash</string>
+    <string name="overlay_engine">Engine</string>
+    <string name="overlay_flash">Chớp</string>
+    <string name="overlay_update">Cập nhật</string>
+    <string name="overlay_stop">Dừng</string>
+    <string name="overlay_resume">Tiếp tục</string>
+    <string name="overlay_close">Đóng</string>
+    <string name="overlay_chip_placeholder">%1$s —</string>
+
+    <!-- ===== Overlay themes ===== -->
+    <string name="theme_dark_glass">Kính tối</string>
+    <string name="theme_black_oled">Đen OLED</string>
+    <string name="theme_light_paper">Giấy sáng</string>
+
+    <!-- ===== Notification ===== -->
+    <string name="notif_channel_name">Liên kết · Nhận diện màn hình</string>
+    <string name="notif_channel_desc">Đang nhận diện màn hình và hướng dẫn qua cửa sổ nổi</string>
+    <string name="notif_title">Tượng Kỳ Dick · Đang nhận diện liên kết</string>
+    <string name="notif_text_default">Chỉ nhận diện thế cờ và gợi ý nước đi, không tự động đi quân</string>
+
+    <!-- ===== Engine strengths / thinking modes ===== -->
+    <string name="strength_fast">Nhanh · độ sâu 12</string>
+    <string name="strength_normal">Chuẩn · độ sâu 20</string>
+    <string name="strength_strong">Mạnh · độ sâu 24</string>
+    <string name="time_1s">1 giây</string>
+    <string name="time_2s">2 giây</string>
+    <string name="time_3s">3 giây</string>
+    <string name="time_5s">5 giây</string>
+    <string name="time_10s">10 giây</string>
+    <string name="time_30s">30 giây</string>
+
+    <!-- ===== Status line messages ===== -->
+    <string name="status_engine_init_fail">Khởi tạo engine nhận diện thất bại: hãy thử khởi động lại ứng dụng (cài lại có thể khắc phục)</string>
+    <string name="status_recognizing_board">Đang nhận diện bàn cờ…\nHãy để bàn cờ hiện đầy đủ, không bị che</string>
+    <string name="status_unstable">Nhận diện không ổn định\nHãy để bàn cờ hiện đầy đủ, không bị che\nTự động phục hồi khi hình ảnh ổn định</string>
+    <string name="status_onnx_fail_yolo">Tải engine ONNX thất bại\nĐã chuyển sang nhận diện YOLO</string>
+    <string name="status_engine_warming">Engine đang khởi động…</string>
+    <string name="status_engine_thinking">Engine đang tính…</string>
+    <string name="status_engine_error">Engine bất thường: %1$s</string>
+    <string name="status_paused">Đã dừng hướng dẫn\nNhấn 『Tiếp tục』 để phục hồi</string>
+    <string name="status_resumed">Tiếp tục hướng dẫn</string>
+    <string name="status_closed">Đã đóng (nhận diện và ghi màn hình đều đã dừng, có thể khởi động lại ở trang liên kết)</string>
+    <string name="status_board_updated_me">Thế cờ đã cập nhật\nĐến lượt ta đi</string>
+    <string name="status_board_updated_opp">Thế cờ đã cập nhật\nĐến lượt đối phương đi</string>
+    <string name="status_switch_engine_onnx">Chuyển engine nhận diện: ONNX góc\nXác nhận lại bàn cờ sau khi chuyển</string>
+    <string name="status_switch_engine_yolo">Chuyển engine nhận diện: YOLO\nXác nhận lại bàn cờ sau khi chuyển</string>
+    <string name="status_flash_done">Chớp nước: đã ngắt tìm kiếm, nhận phương án tốt nhất hiện tại</string>
+    <string name="status_flash_idle">Chớp nước: hiện không có tìm kiếm nào đang chạy</string>
+    <string name="status_no_undo">Không có thế cờ để hối (sẽ tích lũy theo ván đấu)</string>
+    <string name="status_undone">Đã hối một nước\nNhấn 『Tiếp tục』 để phục hồi</string>
+    <string name="status_manual_on">Chế độ chỉnh tay (nhấn lại để thoát)\nChạm quân → chạm ô đích = đi quân\nChạm lại quân đã chọn = xóa\n『Cập nhật thế cờ』 sửa lượt đi</string>
+    <string name="status_manual_off">Đã thoát chế độ chỉnh tay\nPhục hồi nhận diện tự động</string>
+    <string name="status_manual_king">Chế độ chỉnh tay\nKhông thể xóa Tướng</string>
+    <string name="status_manual_own_piece">Chế độ chỉnh tay\nÔ đích là quân của ta, không thể đi</string>
+    <string name="status_strength">Độ mạnh engine: %1$s</string>
+    <string name="status_hash">Engine Hash: %1$dMB</string>
+    <string name="status_think_time">Thời gian tính: %1$s</string>
+    <string name="status_multipv_one">Biến: 1 nhánh (dồn toàn sức tính)</string>
+    <string name="status_multipv_n">Biến: %1$d nhánh (kèm %2$d dự phòng, chia sức tính)</string>
+    <string name="status_not_started">Chưa khởi động</string>
+    <string name="status_capture_stopped">Hệ thống đã dừng ghi màn hình\nCó thể cấp lại quyền ở trang liên kết</string>
+
+    <!-- ===== Overlay state / headline ===== -->
+    <string name="state_manual">Chỉnh tay</string>
+    <string name="state_stopped">Đã dừng</string>
+    <string name="state_engine_error">Engine bất thường</string>
+    <string name="state_recognizing">Đang nhận diện</string>
+    <string name="state_warming">Engine đang khởi động</string>
+    <string name="headline_recognizing">Đang nhận diện</string>
+    <string name="headline_paused">Đã dừng hướng dẫn</string>
+    <string name="headline_my_turn">Lượt ta đi</string>
+    <string name="headline_opp_turn">Lượt đối phương đi</string>
+
+    <!-- ===== Candidate suggestions ===== -->
+    <string name="candidate_book">Khai cuộc %1$s ✓</string>
+    <string name="candidate_book_alt">Khai cuộc dự phòng %1$d %2$s ✓</string>
+    <string name="candidate_winrate">Tỷ lệ thắng khoảng %1$d%%</string>
+    <string name="candidate_turn_mismatch">Lượt đi có thể nhận diện sai\nTự động sửa sau một nước</string>
+    <string name="candidate_suggest">Gợi ý %1$s</string>
+    <string name="candidate_alt">Dự phòng %1$d %2$s</string>
+    <string name="candidate_tentative"> (tạm định)</string>
+    <string name="candidate_depth_score">%1$s sâu %2$d</string>
+    <string name="candidate_if_opp">Nếu đối phương đi %1$s\nTa nên đi %2$s</string>
+    <string name="candidate_no_moves">Không có nước hợp lệ\n(bí nước hoặc đã hết nước đi)</string>
+    <string name="red_advantage">Đỏ ưu thế %1$s</string>
+    <string name="red_disadvantage">Đỏ yếu thế %1$s</string>
+
+    <!-- ===== Engine errors ===== -->
+    <string name="engine_error">Engine lỗi</string>
+    <string name="engine_terminated">Engine đã dừng</string>
+    <string name="uci_protocol_error">Lỗi giao thức UCI</string>
+    <string name="failed_to_start_engine">Không khởi động được engine</string>
+    <string name="engine_start_failed">Khởi động engine thất bại: %1$s (vui lòng kết nối lại)</string>
+    <string name="engine_unknown_reason">nguyên nhân không rõ</string>
+    <string name="engine_search_error">Engine tìm kiếm bất thường, đang tự phục hồi…</string>
+    <string name="engine_create_failed">Không tạo được engine pikafish</string>
+    <string name="engine_exited">Tiến trình engine thoát bất ngờ</string>
+    <string name="engine_uci_timeout">Engine không phản hồi lời chào (uciok), thường do CPU/tương thích</string>
+    <string name="engine_readyok_timeout">Engine không phản hồi lời chào (readyok)</string>
+    <string name="engine_label_prefix">Engine: %1$s</string>
+
+    <!-- ===== ONNX model errors (developer-facing diagnostics) ===== -->
+    <string name="onnx_model_load_failed">Tải mô hình onnx thất bại (kiểm tra assets/models đã có tệp ONNX chưa)</string>
+    <string name="onnx_classifier_not_loaded">classifier session chưa được tải</string>
+
+    <!-- ===== Webview / about page ===== -->
+    <string name="version_info">Phiên bản: %1$d\nThời gian biên dịch: %2$s</string>
+
+    <!-- ===== Move notation (Vietnamese long algebraic) ===== -->
+    <string name="move_unknown">Nước không rõ</string>
+    <string name="move_action_flat">bình</string>
+    <string name="move_action_advance">tiến</string>
+    <string name="move_action_retreat">thoái</string>
+    <string name="move_prefix_front">trước</string>
+    <string name="move_prefix_back">sau</string>
+    <string name="move_prefix_mid">giữa</string>
+    <string name="move_piece_w_king">Tướng</string>
+    <string name="move_piece_w_advisor">Sĩ</string>
+    <string name="move_piece_w_elephant">Tượng</string>
+    <string name="move_piece_w_horse">Mã</string>
+    <string name="move_piece_w_chariot">Xe</string>
+    <string name="move_piece_w_cannon">Pháo</string>
+    <string name="move_piece_w_pawn">Binh</string>
+    <string name="move_piece_b_king">Tướng</string>
+    <string name="move_piece_b_advisor">Sĩ</string>
+    <string name="move_piece_b_elephant">Tượng</string>
+    <string name="move_piece_b_horse">Mã</string>
+    <string name="move_piece_b_chariot">Xe</string>
+    <string name="move_piece_b_cannon">Pháo</string>
+    <string name="move_piece_b_pawn">Tốt</string>
+    <string name="num_1">1</string>
+    <string name="num_2">2</string>
+    <string name="num_3">3</string>
+    <string name="num_4">4</string>
+    <string name="num_5">5</string>
+    <string name="num_6">6</string>
+    <string name="num_7">7</string>
+    <string name="num_8">8</string>
+    <string name="num_9">9</string>
 </resources>

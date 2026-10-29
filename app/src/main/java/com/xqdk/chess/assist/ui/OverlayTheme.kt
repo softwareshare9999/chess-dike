@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.StateListDrawable
+import com.xqdk.chess.R
 
 /**
  * 悬浮窗调色板（对齐 Cabinet 美学方案）：
@@ -53,11 +54,11 @@ class QiPalette(
 )
 
 /** 悬浮窗主题（连线页"悬浮窗主题"按钮循环切换）：深色玻璃 / 纯黑 OLED / 浅色纸感 */
-enum class OverlayTheme(val key: String, val label: String, val palette: QiPalette) {
+enum class OverlayTheme(val key: String, private val labelRes: Int, val palette: QiPalette) {
 
     /** 深色玻璃（默认）：通用档，半透明 90% + 暖白高光（低于 90% 时亮色 App
      *  身后文字对比度跌破 4.5:1，见类头对比度契约） */
-    DARK("overlay_dark", "深色玻璃", QiPalette(
+    DARK("overlay_dark", R.string.theme_dark_glass, QiPalette(
         panel = 0xE61B1E24.toInt(),
         panelStroke = 0x24FFFFFF, panelTopHighlight = 0x12FFFFFF,
         fg = 0xFFE8E6E1.toInt(), muted = 0xFFA8ADB6.toInt(),
@@ -72,7 +73,7 @@ enum class OverlayTheme(val key: String, val label: String, val palette: QiPalet
     )),
 
     /** 纯黑 OLED：夜间省电档，黑底不发光（无高光渐变） */
-    BLACK("overlay_black", "纯黑 OLED", QiPalette(
+    BLACK("overlay_black", R.string.theme_black_oled, QiPalette(
         panel = 0xF2000000.toInt(),
         panelStroke = 0x17FFFFFF, panelTopHighlight = 0,
         fg = 0xFFE8E6E1.toInt(), muted = 0xFFA8ADB6.toInt(),
@@ -86,7 +87,7 @@ enum class OverlayTheme(val key: String, val label: String, val palette: QiPalet
     )),
 
     /** 浅色纸感：强光环境护眼档，文字整体加深保证对比（身后深色内容为 worst） */
-    LIGHT("overlay_light", "浅色纸感", QiPalette(
+    LIGHT("overlay_light", R.string.theme_light_paper, QiPalette(
         panel = 0xE6ECEFF1.toInt(),
         panelStroke = 0x1F000000, panelTopHighlight = 0x1AFFFFFF,
         fg = 0xFF263238.toInt(), muted = 0xFF3F545E.toInt(),
@@ -150,6 +151,9 @@ enum class OverlayTheme(val key: String, val label: String, val palette: QiPalet
     }
 
     private fun dp(ctx: Context, v: Float): Int = (v * ctx.resources.displayMetrics.density).toInt()
+
+    /** 主题显示名（随应用语言本地化） */
+    fun label(ctx: Context): String = ctx.getString(labelRes)
 
     companion object {
         fun fromKey(key: String): OverlayTheme =

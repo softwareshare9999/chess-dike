@@ -23,10 +23,11 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.xqdk.chess.R
 import com.xqdk.chess.assist.ScreenAssistService
+import com.xqdk.chess.i18n.LocaleAwareActivity
+import com.xqdk.chess.i18n.LocaleHelper
 
 /**
  * 连线工作页（美学终稿 §3.2）：纸底仪器面（识别点阵 + 状态行 + hero + 河界线）+
@@ -37,30 +38,19 @@ import com.xqdk.chess.assist.ScreenAssistService
  * 打开应用即达连线页；免责弹窗随启动语义一并迁入）。
  * 交互契约一行不删：每秒轮询、变化才回填、启动守卫、运行中热切换、绑定补应用配置。
  */
-class AssistActivity : AppCompatActivity() {
+class AssistActivity : LocaleAwareActivity() {
 
     companion object {
 
         /**
          * 免责声明（四条条款，对齐 Cabinet 口径；首启弹窗 / About / 帮助页 / README
-         * 共用同一文案，任何修改需四处同步）。
+         * 共用同一文案，任何修改需四处同步）。文案随应用语言本地化，
+         * 见 res/values/strings.xml（越南语默认）与 values-zh-rCN/strings.xml（中文）。
          */
-        const val DISCLAIMER =
-            "本软件（象棋迪克）为象棋学习辅助工具，仅供个人学习、复盘研究与技术交流使用。请在使用前仔细阅读以下条款：\n\n" +
-            "一、本软件仅通过系统录屏授权识别画面并以悬浮窗显示走法建议，不包含自动走子、触摸注入、无障碍服务、Root/Xposed 等功能，所有着法均由玩家手动操作。\n\n" +
-            "二、严禁将本软件用于任何正式比赛、等级分对局、网络对局平台或赌博等违反平台规则与法律法规的场景；由此产生的一切后果由使用者本人承担。\n\n" +
-            "三、本软件仅供学习研究，请于获取后 24 小时内自行删除。\n\n" +
-            "四、本软件按\"现状\"提供，不对软件的可用性与准确性作任何保证，不对因使用本软件造成的任何直接或间接损失承担责任。\n\n" +
-            "点击\"同意并继续\"即表示您已阅读、理解并同意以上全部条款。"
+        fun disclaimer(ctx: Context): String = ctx.getString(R.string.disclaimer_body)
 
         /** 鸣谢（品牌说明中唯一保留"象棋鱼"字眼处） */
-        const val CREDITS =
-            "鸣谢：\n" +
-            "· 本项目基于开源项目\"象棋鱼\"（作者 zfdang，GitHub: zfdang/chinese-chess-android）二次开发；\n" +
-            "· YOLO 棋子检测权重文件来自 Vincentzyx/VinXiangQi 项目；\n" +
-            "· ONNX 两步式识别引擎（RTMPose 角点 + Swin 分类）的模型与算法来自 " +
-            "Shirakawa-Kotone/chinese-chess-helper 项目；\n" +
-            "· 引擎框架基座：Pikafish 团队与 DroidFish（Peter Österlund），GPL-3.0 开源授权。"
+        fun credits(ctx: Context): String = ctx.getString(R.string.credits_body)
     }
 
     /** 步骤行状态（几何序号语义：完成玉✓实心 / 待办朱砂描边 / 未开始灰空心） */
@@ -147,9 +137,9 @@ class AssistActivity : AppCompatActivity() {
             captureIntentCode = result.resultCode
             captureIntentData = result.data
             startCaptureService()
-            Toast.makeText(this, "录屏授权成功，识别服务已启动", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.assist_capture_ok), Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(this, "未授予录屏权限，无法识别", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.assist_capture_denied), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -170,12 +160,14 @@ class AssistActivity : AppCompatActivity() {
 
         // 底部入口：帮助（本地帮助页）/ 关于（本地对话框）——原主页文字入口迁入连线页
         findViewById<Button>(R.id.button_help).setOnClickListener {
+            val helpAsset = if (LocaleHelper.isChinese(this)) "help-zh.html" else "help.html"
             val intent = Intent(this, com.xqdk.chess.views.WebviewActivity::class.java).apply {
-                putExtra("url", "file:///android_asset/help.html")
+                putExtra("url", "file:///android_asset/$helpAsset")
             }
             startActivity(intent)
         }
         findViewById<Button>(R.id.button_about).setOnClickListener { showAboutDialog() }
+        findViewById<Button>(R.id.button_language).setOnClickListener { showLanguageDialog() }
 
         btnOverlay = findViewById(R.id.btn_overlay_permission)
         btnNotify = findViewById(R.id.btn_notification_permission)
@@ -200,7 +192,7 @@ class AssistActivity : AppCompatActivity() {
         // 配置与显示不一致
         btnOverlayTheme.text = OverlayTheme.fromKey(
             com.xqdk.chess.assist.AssistConfig(this).overlayTheme
-        ).label
+        ).label(this)
         btnOverlayTheme.setOnClickListener {
             val cur = OverlayTheme.fromKey(
                 com.xqdk.chess.assist.AssistConfig(this).overlayTheme
@@ -208,7 +200,7 @@ class AssistActivity : AppCompatActivity() {
             val next = themeOrder[(themeOrder.indexOf(cur) + 1) % themeOrder.size]
             com.xqdk.chess.assist.AssistConfig(this).overlayTheme = next.key
             service?.applyOverlayTheme(next)
-            btnOverlayTheme.text = next.label
+            btnOverlayTheme.text = next.label(this)
         }
 
         btnOverlay.setOnClickListener {
@@ -234,7 +226,7 @@ class AssistActivity : AppCompatActivity() {
             // 前置校验：悬浮窗未授权时启动服务，ensureOverlay 静默返回 null，
             // 界面显示"运行中"却永远没有悬浮面板
             if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "请先完成①悬浮窗权限授权，再启动屏幕识别", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.assist_need_overlay_first), Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
             val mpm = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
@@ -313,11 +305,11 @@ class AssistActivity : AppCompatActivity() {
      */
     private fun maybeShowDisclaimer() {
         androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("免责声明")
-            .setMessage(DISCLAIMER)
+            .setTitle(R.string.disclaimer_title)
+            .setMessage(disclaimer(this))
             .setCancelable(false)
-            .setPositiveButton("同意并继续") { d, _ -> d.dismiss() }
-            .setNegativeButton("不同意并退出") { _, _ ->
+            .setPositiveButton(R.string.disclaimer_agree) { d, _ -> d.dismiss() }
+            .setNegativeButton(R.string.disclaimer_disagree) { _, _ ->
                 finishAffinity()
             }
             .show()
@@ -325,18 +317,36 @@ class AssistActivity : AppCompatActivity() {
 
     /** 关于：本地对话框（特色功能 + 免责声明 + 鸣谢），不依赖外部站点 */
     private fun showAboutDialog() {
-        val text = "象棋迪克 XQDK v${com.xqdk.chess.BuildConfig.VERSION_NAME}\n\n" +
-            "特色功能：\n" +
-            "· AI 连线识别：ONNX 角点式（主力）/ YOLO 免校准屏幕识别、自动朝向、" +
-            "悬浮窗实时走法建议、开局库速查、多候选与紧急手动模式（只识别提示，不自动走子）；\n" +
-            "· 内置 Pikafish 引擎与桔库开局库，深度/时间双思考制式可选。\n\n" +
-            DISCLAIMER + "\n\n" +
-            CREDITS
+        val text = getString(R.string.about_body, com.xqdk.chess.BuildConfig.VERSION_NAME) +
+            "\n" + disclaimer(this) + "\n\n" +
+            credits(this)
         androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("关于 · 象棋迪克")
+            .setTitle(R.string.about_title)
             .setIcon(com.xqdk.chess.R.drawable.ic_launcher)
             .setMessage(text)
-            .setPositiveButton("我知道了", null)
+            .setPositiveButton(R.string.i_know, null)
+            .show()
+    }
+
+    /** 语言切换：持久化后重建 Activity（连线页是 launcher，重建即生效） */
+    private fun showLanguageDialog() {
+        val options = arrayOf(
+            getString(R.string.language_vietnamese),
+            getString(R.string.language_chinese),
+        )
+        val current = if (LocaleHelper.isChinese(this)) 1 else 0
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle(R.string.language)
+            .setSingleChoiceItems(options, current) { d, which ->
+                d.dismiss()
+                val target = if (which == 1) LocaleHelper.LANG_ZH else LocaleHelper.LANG_VI
+                if (target == LocaleHelper.getLanguage(this)) return@setSingleChoiceItems
+                LocaleHelper.setLanguage(this, target)
+                com.xqdk.chess.i18n.MoveNotation.install()
+                // 重建任务栈：服务与悬浮窗仍在跑，仅界面换语言
+                recreate()
+            }
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
 
@@ -406,12 +416,12 @@ class AssistActivity : AppCompatActivity() {
         mainBtnState = state
         when (state) {
             MainBtnState.IDLE -> {
-                btnStartCapture.text = "开始屏幕识别"
+                btnStartCapture.text = getString(R.string.assist_start_capture)
                 btnStartCapture.setBackgroundResource(R.drawable.main_btn_outline)
                 btnStartCapture.setTextColor(color(R.color.xq_ink_text))
             }
             MainBtnState.RUNNING -> {
-                btnStartCapture.text = "停止指导"
+                btnStartCapture.text = getString(R.string.assist_stop_guide)
                 btnStartCapture.setBackgroundResource(R.drawable.main_btn_outline_warn)
                 btnStartCapture.setTextColor(color(R.color.xq_warn))
             }
@@ -457,26 +467,26 @@ class AssistActivity : AppCompatActivity() {
 
         setStep(stepOverlayNum, stepOverlayChip,
             if (overlayOk) StepState.DONE else StepState.TODO,
-            if (overlayOk) "已就绪" else "去授予")
+            getString(if (overlayOk) R.string.assist_step_ready else R.string.assist_step_grant))
         setTextIfChanged(stepOverlayHint,
-            if (overlayOk) "已授权 · 可随时在系统设置中更改" else "用于在其他应用上方显示走法面板")
+            getString(if (overlayOk) R.string.assist_perm_overlay_ok else R.string.assist_perm_overlay_hint))
 
         setStep(stepNotifyNum, stepNotifyChip,
             if (notifOk) StepState.DONE else StepState.TODO,
-            if (notifOk) "已就绪" else "去授予")
+            getString(if (notifOk) R.string.assist_step_ready else R.string.assist_step_grant))
         setTextIfChanged(stepNotifyHint,
-            if (notifOk) "前台服务提示正常" else "Android 13+ 前台服务需要")
+            getString(if (notifOk) R.string.assist_perm_notify_ok else R.string.assist_perm_notify_hint))
         btnNotify.isEnabled = !notifOk && Build.VERSION.SDK_INT >= 33
 
         setStep(stepCaptureNum, stepCaptureChip,
             if (running) StepState.DONE else StepState.LOCKED,
-            if (running) "运行中" else "按需")
+            getString(if (running) R.string.assist_step_running else R.string.assist_step_ondemand))
 
         setMainButton(if (running) MainBtnState.RUNNING else MainBtnState.IDLE)
 
         if (running) {
             val statusText = svc!!.getStatusText()
-            val mapped = AssistStateMap.fromStatusText(statusText)
+            val mapped = svc!!.getStatusKind()
             setStateDot(
                 when (mapped) {
                     AssistState.ERROR -> color(R.color.xq_warn)
@@ -485,14 +495,14 @@ class AssistActivity : AppCompatActivity() {
                     AssistState.IDLE -> color(R.color.xq_muted)
                 }
             )
-            setTextIfChanged(tvStatus, statusText.lineSequence().firstOrNull() ?: "识别中")
+            setTextIfChanged(tvStatus, statusText.lineSequence().firstOrNull() ?: getString(R.string.overlay_recognizing))
             setHero(true, statusText)
             riverLine.setBreathing(true)
             dotGrid.setAssistState(mapped)
         } else {
             val pending = !overlayOk || !notifOk
             setStateDot(color(if (pending) R.color.xq_amber else R.color.xq_jade))
-            setTextIfChanged(tvStatus, if (pending) "待授权" else "已就绪")
+            setTextIfChanged(tvStatus, getString(if (pending) R.string.assist_step_pending else R.string.assist_step_ready))
             setHero(false)
             riverLine.setBreathing(false)
             dotGrid.setAssistState(AssistState.IDLE)

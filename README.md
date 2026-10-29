@@ -19,6 +19,22 @@
 **严禁用于任何正式比赛、等级分对局、网络对局平台或赌博等违反平台规则与法律法规的场景**；
 请于获取后 **24 小时内自行删除**。详见应用内免责声明全文。
 
+## 本分支（fork）的差异
+
+本仓是 [Silva6c/chess-dike](https://github.com/Silva6c/chess-dike) 的 fork，在 v3.0
+基线上只做两件事，其余与上游保持一致：
+
+- **越南语界面（默认语言）**：`values/strings.xml` 为越南语，`values-zh-rCN/strings.xml`
+  为中文；连线页底部「Ngôn ngữ / 语言」可切换，切换后界面即时重建生效（识别服务与
+  悬浮窗不受影响）。棋盘上的棋子字形仍为中文（帅/将/车…），只有着法描述词
+  （Tướng/Mã/Xe…、tiến/thoái/bình、越南语用阿拉伯数字）随语言变化。
+- **每次推送即出包**：CI 在每次 push 到 main 与手动触发时构建双 flavor APK 并发布
+  Release，便于随时下载安装（上游已改为仅 `stable-*` tag 触发）。
+
+> 同步上游：上游会重写提交历史（rebase），GitHub 的 "Sync fork" 按钮因此在历史上
+> 无共同祖先而报冲突。本仓已按「以 v3.0 为基线重放 fork 改动」的方式同步，
+> 之后再同步上游仍可能因历史重写而需要命令行操作。
+
 ## 推荐项目：内阁 Cabinet（同作者的另一条路线）
 
 如果你喜欢本项目的"连线"功能，也欢迎看看同作者的 **[内阁 Cabinet](https://github.com/Silva6c/cabinet)**：
@@ -87,9 +103,11 @@
 注意：debug 签名的包与既有正式发布包签名不同，**不能覆盖安装**，只能卸载重装。
 如需以你自己的身份发布，请替换为自有 keystore。
 
-**CI 自动出包**：推送 `stable-*` tag 自动触发构建（单元测试 + 双 flavor 出包），
-版权物由构建时从本仓 `assets` 预发布 Release 拉取注入并挂到同名 Release；
-本地构建则按上表自行放置大文件。
+**CI 自动出包**：本 fork 在每次 push 到 `main` 与手动触发时构建（单元测试 + 双 flavor 出包）
+并发布 Release；版权物由构建时从本仓 `assets` 预发布 Release 拉取注入。
+首次使用需先创建该预发布并上传 `4_v6-0301.onnx`、`nano_v3-0319.onnx` 与 `XQDK-obk.zip`
+（可从上游 [Silva6c/chess-dike 的 assets Release](https://github.com/Silva6c/chess-dike/releases/tag/assets)
+下载），缺失时 CI 会直接失败并提示。本地构建则按上表自行放置大文件。
 
 ## 官方获取渠道与签名核验
 

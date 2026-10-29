@@ -8,13 +8,14 @@ import android.webkit.WebViewClient
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.readystatesoftware.android.sqliteassethelper.BuildConfig
 import com.xqdk.chess.R
+import com.xqdk.chess.i18n.LocaleAwareActivity
+import com.xqdk.chess.i18n.LocaleHelper
 
-class WebviewActivity : AppCompatActivity() {
+class WebviewActivity : LocaleAwareActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +28,7 @@ class WebviewActivity : AppCompatActivity() {
         val datetime = java.util.Date(packageInfo.lastUpdateTime)
         // convert datetime to string with format YYYY-MM-DD HH:MM:SS
         val datetimeString = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(datetime)
-        textViewVersion.text = "当前版本: ${packageInfo.versionCode}\n" + "编译时间: $datetimeString"
+        textViewVersion.text = getString(R.string.version_info, packageInfo.longVersionCode.toInt(), datetimeString)
 
         // bind imageButton and set click listener
         val imageButtonBack: ImageButton = findViewById(R.id.imageButtonBack)
@@ -45,10 +46,15 @@ class WebviewActivity : AppCompatActivity() {
         webView.settings.setUseWideViewPort(false)
         webView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS;
 
-        val url = intent.getStringExtra("url") ?: "file:///android_asset/help.html"
+        val url = intent.getStringExtra("url") ?: defaultHelpUrl()
         webView.loadUrl(url)
     }
 
+
+    /** 帮助页随应用语言切换：越南语 help.html / 中文 help-zh.html */
+    private fun defaultHelpUrl(): String =
+        if (LocaleHelper.isChinese(this)) "file:///android_asset/help-zh.html"
+        else "file:///android_asset/help.html"
 
     override fun onBackPressed() {
         val webView: WebView = findViewById(R.id.webview)

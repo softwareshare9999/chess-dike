@@ -1,8 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    简体中文（zh-rCN）。默认语言为越南语（values/strings.xml），本文件为对照。
+    两个文件必须键一一对应；新增字符串请同时补齐两边。
+-->
 <resources>
     <string name="app_name">象棋迪克</string>
 
+    <!-- ===== 通用 ===== -->
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确认</string>
+    <string name="close">关闭</string>
+    <string name="confirm_q">确认?</string>
+    <string name="i_know">我知道了</string>
+
+    <!-- ===== 语言 ===== -->
+    <string name="language">语言</string>
+    <string name="language_vietnamese">越南语</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_changed_restart">语言已切换，请重新打开界面以生效。</string>
+
+    <!-- ===== 主页门面（连线页） ===== -->
+    <string name="main_hero">看穿这一局</string>
+    <string name="main_help">帮助</string>
+    <string name="main_about">关于</string>
+
+    <string name="disclaimer_title">免责声明</string>
+    <string name="disclaimer_agree">同意并继续</string>
+    <string name="disclaimer_disagree">不同意并退出</string>
+    <string name="disclaimer_body">本软件（象棋迪克）为象棋学习辅助工具，仅供个人学习、复盘研究与技术交流使用。请在使用前仔细阅读以下条款：\n\n一、本软件仅通过系统录屏授权识别画面并以悬浮窗显示走法建议，不包含自动走子、触摸注入、无障碍服务、Root/Xposed 等功能，所有着法均由玩家手动操作。\n\n二、严禁将本软件用于任何正式比赛、等级分对局、网络对局平台或赌博等违反平台规则与法律法规的场景；由此产生的一切后果由使用者本人承担。\n\n三、本软件仅供学习研究，请于获取后 24 小时内自行删除。\n\n四、本软件按“现状”提供，不对软件的可用性与准确性作任何保证，不对因使用本软件造成的任何直接或间接损失承担责任。\n\n点击“同意并继续”即表示您已阅读、理解并同意以上全部条款。</string>
+    <string name="credits_body">鸣谢：\n· 本项目基于开源项目“象棋鱼”（作者 zfdang，GitHub: zfdang/chinese-chess-android）二次开发；\n· YOLO 棋子检测权重文件来自 Vincentzyx/VinXiangQi 项目；\n· ONNX 两步式识别引擎（RTMPose 角点 + Swin 分类）的模型与算法来自 Shirakawa-Kotone/chinese-chess-helper 项目；\n· 引擎框架基座：Pikafish 团队与 DroidFish（Peter Österlund），GPL-3.0 开源授权。</string>
+    <string name="about_title">关于 · 象棋迪克</string>
+    <string name="about_body">象棋迪克 XQDK v%1$s\n\n特色功能：\n· AI 连线识别：ONNX 角点式（主力）/ YOLO 免校准屏幕识别、自动朝向、悬浮窗实时走法建议、开局库速查、多候选与紧急手动模式（只识别提示，不自动走子）；\n· 内置 Pikafish 引擎与桔库开局库，深度/时间双思考制式可选。\n\n</string>
+
+    <!-- ===== 连线页：按钮与步骤 ===== -->
+    <string name="assist_title">象棋迪克 · 连线识别指导</string>
+    <string name="assist_btn_overlay">① 授予悬浮窗权限</string>
+    <string name="assist_btn_overlay_ok">① 悬浮窗权限：已授权 ✓</string>
+    <string name="assist_btn_notify">② 通知权限（Android 13+）</string>
+    <string name="assist_btn_notify_hint">② 允许通知（前台服务提示）</string>
+    <string name="assist_btn_notify_ok">② 通知权限：已就绪 ✓</string>
+    <string name="assist_btn_capture">③ 开始屏幕识别（全自动识别棋盘）</string>
+    <string name="assist_btn_capture_running">③ 屏幕识别运行中 ✓</string>
+    <string name="assist_btn_theme">④ 悬浮窗主题：%1$s</string>
+    <string name="assist_start_capture">开始屏幕识别</string>
+    <string name="assist_stop_guide">停止指导</string>
+    <string name="assist_engine_onnx">⑤ 识别引擎：ONNX 角点式（默认，泛化好）</string>
+    <string name="assist_engine_yolo">⑤ 识别引擎：YOLO 检测式（回退）</string>
+
+    <string name="assist_step_ready">已就绪</string>
+    <string name="assist_step_grant">去授予</string>
+    <string name="assist_step_running">运行中</string>
+    <string name="assist_step_ondemand">按需</string>
+    <string name="assist_step_pending">待授权</string>
+
+    <string name="assist_perm_overlay_title">悬浮窗权限</string>
+    <string name="assist_perm_overlay_ok">已授权 · 可随时在系统设置中更改</string>
+    <string name="assist_perm_overlay_hint">用于在其他应用上方显示走法面板</string>
+    <string name="assist_perm_notify_title">通知权限</string>
+    <string name="assist_perm_notify_ok">前台服务提示正常</string>
+    <string name="assist_perm_notify_hint">Android 13+ 前台服务需要</string>
+    <string name="assist_perm_capture_title">屏幕录制</string>
+    <string name="assist_perm_capture_hint">点击下方按钮时按需申请，全程本地处理</string>
+    <string name="assist_settings">设置</string>
+    <string name="assist_theme_label">悬浮窗主题</string>
+    <string name="assist_engine_label">识别引擎</string>
+    <string name="assist_engine_onnx_short">ONNX 角点式</string>
+    <string name="assist_engine_yolo_short">YOLO 检测式</string>
+    <string name="assist_think_mode_label">思考制式</string>
+    <string name="assist_think_depth">深度制</string>
+    <string name="assist_think_time">时间制</string>
+    <string name="assist_compliance">合规声明：本功能仅通过系统录屏授权做画面识别并显示走法建议，属于象棋学习辅助工具，仅供学习研究，请于获取后24小时内自行删除。不包含自动走子、触摸注入、无障碍服务、Root/Xposed 或读取其他应用数据；对局中的所有着法均由玩家手动操作。</string>
+    <string name="overlay_multipv_n_placeholder">3变</string>
+    <string name="version_label">当前版本:</string>
+    <string name="assist_step_recognizing">识别中</string>
+
+    <string name="assist_capture_ok">录屏授权成功，识别服务已启动</string>
+    <string name="assist_capture_denied">未授予录屏权限，无法识别</string>
+    <string name="assist_need_overlay_first">请先完成①悬浮窗权限授权，再启动屏幕识别</string>
+
+    <!-- ===== 悬浮窗面板 ===== -->
+    <string name="overlay_recognizing">识别中</string>
+    <string name="overlay_occluded">挡住棋盘，建议移开</string>
+    <string name="overlay_change_move">变招</string>
+    <string name="overlay_multipv_n">%1$d变</string>
+    <string name="overlay_undo">悔棋</string>
+    <string name="overlay_manual">手动</string>
+    <string name="overlay_depth">深度</string>
+    <string name="overlay_time">时间</string>
+    <string name="overlay_hash">哈希</string>
+    <string name="overlay_engine">引擎</string>
+    <string name="overlay_flash">闪电</string>
+    <string name="overlay_update">更新</string>
+    <string name="overlay_stop">停止</string>
+    <string name="overlay_resume">继续</string>
+    <string name="overlay_close">关闭</string>
+    <string name="overlay_chip_placeholder">%1$s —</string>
+
+    <!-- ===== 悬浮窗主题 ===== -->
+    <string name="theme_dark_glass">深色玻璃</string>
+    <string name="theme_black_oled">纯黑 OLED</string>
+    <string name="theme_light_paper">浅色纸感</string>
+
+    <!-- ===== 通知 ===== -->
+    <string name="notif_channel_name">连线·屏幕识别</string>
+    <string name="notif_channel_desc">屏幕识别与悬浮窗指导运行中</string>
+    <string name="notif_title">象棋迪克·连线识别运行中</string>
+    <string name="notif_text_default">仅识别局面并给出走法建议，不会自动走子</string>
+
+    <!-- ===== 引擎强度 / 思考制式 ===== -->
+    <string name="strength_fast">快速·深度12</string>
+    <string name="strength_normal">标准·深度20</string>
+    <string name="strength_strong">强劲·深度24</string>
+    <string name="time_1s">1秒</string>
+    <string name="time_2s">2秒</string>
+    <string name="time_3s">3秒</string>
+    <string name="time_5s">5秒</string>
+    <string name="time_10s">10秒</string>
+    <string name="time_30s">30秒</string>
+
+    <!-- ===== 状态行 ===== -->
+    <string name="status_engine_init_fail">识别引擎初始化失败：请尝试重启应用（重装可修复）</string>
+    <string name="status_recognizing_board">正在识别棋盘…\n请让棋盘完整无遮挡</string>
+    <string name="status_unstable">识别不稳定\n请让棋盘完整无遮挡\n画面稳定后自动恢复</string>
+    <string name="status_onnx_fail_yolo">ONNX 引擎加载失败\n已回退 YOLO 识别</string>
+    <string name="status_engine_warming">引擎预热中…</string>
+    <string name="status_engine_thinking">引擎思考中…</string>
+    <string name="status_engine_error">引擎异常：%1$s</string>
+    <string name="status_paused">已停止指导\n点『继续』恢复</string>
+    <string name="status_resumed">继续指导</string>
+    <string name="status_closed">已关闭（识别与录屏均已停止，可在连线页重新启动）</string>
+    <string name="status_board_updated_me">棋局已更新\n现轮到我方走</string>
+    <string name="status_board_updated_opp">棋局已更新\n现轮到对方走</string>
+    <string name="status_switch_engine_onnx">切换识别引擎：ONNX 角点式\n切换后重新确认棋盘</string>
+    <string name="status_switch_engine_yolo">切换识别引擎：YOLO 检测式\n切换后重新确认棋盘</string>
+    <string name="status_flash_done">闪电出着：已打断搜索，采纳当前最优</string>
+    <string name="status_flash_idle">闪电出着：当前没有思考中的搜索</string>
+    <string name="status_no_undo">没有可悔的局面（会随对弈自动积累）</string>
+    <string name="status_undone">已悔棋一步\n点『继续』恢复</string>
+    <string name="status_manual_on">手动模式（再点手动退出）\n点子选中→点目标格=走子\n再点选中子=删除\n『更新棋局』纠正轮次</string>
+    <string name="status_manual_off">已退出手动模式\n恢复自动识别</string>
+    <string name="status_manual_king">手动模式\n帅/将不可删除</string>
+    <string name="status_manual_own_piece">手动模式\n目标格是己方子，不能走</string>
+    <string name="status_strength">引擎强度：%1$s</string>
+    <string name="status_hash">引擎 Hash：%1$dMB</string>
+    <string name="status_think_time">思考时长：%1$s</string>
+    <string name="status_multipv_one">变招：1 路（算力最全）</string>
+    <string name="status_multipv_n">变招：%1$d 路（附%2$d个备选，算力摊薄）</string>
+    <string name="status_not_started">未启动</string>
+    <string name="status_capture_stopped">录屏已被系统停止\n可在连线页重新授权启动</string>
+
+    <!-- ===== 悬浮窗状态 / 大字 ===== -->
+    <string name="state_manual">手动模式</string>
+    <string name="state_stopped">已停止</string>
+    <string name="state_engine_error">引擎异常</string>
+    <string name="state_recognizing">识别中</string>
+    <string name="state_warming">引擎预热中</string>
+    <string name="headline_recognizing">识别中</string>
+    <string name="headline_paused">已停止指导</string>
+    <string name="headline_my_turn">轮到我方走</string>
+    <string name="headline_opp_turn">轮到对方走</string>
+
+    <!-- ===== 候选建议 ===== -->
+    <string name="candidate_book">开局库 %1$s ✓</string>
+    <string name="candidate_book_alt">开局库备选%1$d %2$s ✓</string>
+    <string name="candidate_winrate">胜率约 %1$d%%</string>
+    <string name="candidate_turn_mismatch">轮次可能识别有误\n走一步后自动纠正</string>
+    <string name="candidate_suggest">建议 %1$s</string>
+    <string name="candidate_alt">备选%1$d %2$s</string>
+    <string name="candidate_tentative">（暂定）</string>
+    <string name="candidate_depth_score">%1$s 深%2$d</string>
+    <string name="candidate_if_opp">若对方走%1$s\n我方应%2$s</string>
+    <string name="candidate_no_moves">无可用着法\n（困毙或已无着可走）</string>
+    <string name="red_advantage">红方优势 %1$s</string>
+    <string name="red_disadvantage">红方劣势 %1$s</string>
+
+    <!-- ===== 引擎错误 ===== -->
+    <string name="engine_error">引擎错误</string>
     <string name="engine_terminated">引擎终止</string>
     <string name="uci_protocol_error">UCI协议错误</string>
     <string name="failed_to_start_engine">无法启动引擎</string>
+    <string name="engine_start_failed">引擎启动失败：%1$s（请重新连线重试）</string>
+    <string name="engine_unknown_reason">未知原因</string>
+    <string name="engine_search_error">引擎搜索异常，正在自愈…</string>
+    <string name="engine_create_failed">无法创建 pikafish 引擎</string>
+    <string name="engine_exited">引擎进程意外退出</string>
+    <string name="engine_uci_timeout">引擎握手超时（uciok），多为 CPU/兼容性问题</string>
+    <string name="engine_readyok_timeout">引擎就绪握手失败（readyok）</string>
+    <string name="engine_label_prefix">引擎: %1$s</string>
 
+    <!-- ===== ONNX 模型错误（诊断信息） ===== -->
+    <string name="onnx_model_load_failed">onnx 模型加载失败（检查 assets/models 下是否已放置 ONNX 文件）</string>
+    <string name="onnx_classifier_not_loaded">classifier session 未加载</string>
+
+    <!-- ===== 关于页版本信息 ===== -->
+    <string name="version_info">当前版本: %1$d\n编译时间: %2$s</string>
+
+    <!-- ===== 中文着法记号 ===== -->
+    <string name="move_unknown">未知动作</string>
+    <string name="move_action_flat">平</string>
+    <string name="move_action_advance">进</string>
+    <string name="move_action_retreat">退</string>
+    <string name="move_prefix_front">前</string>
+    <string name="move_prefix_back">后</string>
+    <string name="move_prefix_mid">中</string>
+    <string name="move_piece_w_king">帅</string>
+    <string name="move_piece_w_advisor">仕</string>
+    <string name="move_piece_w_elephant">相</string>
+    <string name="move_piece_w_horse">马</string>
+    <string name="move_piece_w_chariot">车</string>
+    <string name="move_piece_w_cannon">炮</string>
+    <string name="move_piece_w_pawn">兵</string>
+    <string name="move_piece_b_king">将</string>
+    <string name="move_piece_b_advisor">士</string>
+    <string name="move_piece_b_elephant">象</string>
+    <string name="move_piece_b_horse">马</string>
+    <string name="move_piece_b_chariot">车</string>
+    <string name="move_piece_b_cannon">炮</string>
+    <string name="move_piece_b_pawn">卒</string>
+    <string name="num_1">一</string>
+    <string name="num_2">二</string>
+    <string name="num_3">三</string>
+    <string name="num_4">四</string>
+    <string name="num_5">五</string>
+    <string name="num_6">六</string>
+    <string name="num_7">七</string>
+    <string name="num_8">八</string>
+    <string name="num_9">九</string>
 </resources>
