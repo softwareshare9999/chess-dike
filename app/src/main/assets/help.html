@@ -20,11 +20,17 @@
 <ul>
   <li>① Cấp quyền cửa sổ nổi → ② Cho phép thông báo → ③ Cấp quyền ghi màn hình và khởi động;</li>
   <li>Chuyển sang giao diện đối trận của app cờ bất kỳ: ONNX góc (chính) hoặc YOLO tự tìm bàn cờ, tự nhận hướng, cửa sổ nổi gợi ý nước đi cho bên ta theo thời gian thực;</li>
-  <li>Nút trên panel: <b>Đổi nước</b> (chuyển ứng viên), <b>N biến</b> (số nhánh MultiPV 1-3 lặp vòng), <b>Hối kỳ</b> (lùi một nước), <b>Chỉnh tay</b> (khi nhận diện lỗi, chỉnh bàn nhỏ thủ công),
+  <li>Nút trên panel: <b>Đổi nước</b> (chuyển ứng viên), <b>N biến</b> (số nhánh MultiPV 1-3 lặp vòng, mặc định 1 nhánh = dồn toàn sức tính; nhiều nhánh có phương án dự phòng nhưng chậm hơn ở cùng độ sâu), <b>Hối kỳ</b> (lùi một nước), <b>Chỉnh tay</b> (khi nhận diện lỗi, chỉnh bàn nhỏ thủ công),
       <b>Độ sâu</b> (chế độ độ sâu, 12/20/24) hoặc <b>Thời gian</b> (chế độ thời gian, 1-30 giây; hiển thị theo chế độ tính đã chọn ở trang liên kết), <b>Hash</b> (kích thước bảng thay thế engine, điều chỉnh vòng từ 256MB), <b>Engine</b> (chuyển nóng ONNX/YOLO),
       <b>Cập nhật</b> (sửa bên đi), <b>Chớp</b> (ngắt tìm kiếm hiện tại, nhận ngay phương án tốt nhất), <b>Dừng/Đóng</b> (đóng cần xác nhận lần hai);</li>
   <li>Trang liên kết cho phép chuyển nóng engine nhận diện (ONNX góc / YOLO), chế độ tính (độ sâu/thời gian — cửa sổ nổi chỉ hiện đúng mức tương ứng) và giao diện cửa sổ nổi (Kính tối / Đen OLED / Giấy sáng);</li>
   <li>Chạm bàn cờ nhỏ để đổi ứng viên; gợi ý ổn định hiện mũi tên xanh, tạm định là xanh dương.</li>
+  <li><b>Chẩn đoán hiệu năng</b> (khu cài đặt trang liên kết): bật khi thấy nhận diện chậm đi; ứng dụng tạo tệp XQDK_诊断_*.md trong thư mục Download của hệ thống và ghi rõ vị trí,
+      liên tục ghi lại tham số phiên, sự kiện (nạp/chuyển/tự phục hồi engine, xác nhận bàn cờ), thời gian từng phân đoạn và nhịp của mỗi khung hình nhận diện,
+      tiến trình tìm kiếm của engine, đồng thời định kỳ tổng hợp thống kê (thành công/thất bại, trung bình/P50/P95); tắt công tắc hoặc thoát liên kết sẽ tự kết thúc,
+      chỉ cần gửi lại tệp đó để xác định điểm nghẽn.</li>
+  <li><b>Kiểm tra cập nhật</b> (khu cài đặt trang liên kết): nhấn thủ công để tra bản chính thức trên GitHub (không tự động kiểm tra);
+      phát hiện bản mới sẽ hiện hộp thoại và có thể mở trang tải xuống. Việc tra cứu cần môi trường mạng truy cập được GitHub, khi thất bại sẽ báo lý do.</li>
 </ul>
 
 <h2>Tuân thủ và miễn trừ trách nhiệm</h2>

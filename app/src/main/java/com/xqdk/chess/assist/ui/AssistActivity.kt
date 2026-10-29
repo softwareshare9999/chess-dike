@@ -258,9 +258,93 @@ class AssistActivity : LocaleAwareActivity() {
             service?.setSearchMode(isTime)
         }
 
+        // 性能诊断：识别分段计时日志开关（真机排查识别耗时用）——logcat 过滤
+        // AssistService，同时落盘到 Download 目录的 md 文件（服务返回文件路径，
+        // Toast 标明位置，用户从文件管理器直接取）。服务未绑定（停服中）也先落盘
+        // 配置，服务启动时读到即生效；服务在线则即时重建 ONNX 引擎（分段计时是
+        // 识别器构造参数）
+        val btnBench = findViewById<Button>(R.id.btn_bench_profiling)
+        btnBench.text = getString(if (cfg.benchProfiling) R.string.switch_on else R.string.switch_off)
+        btnBench.setOnClickListener {
+            val on = !cfg.benchProfiling
+            cfg.benchProfiling = on
+            btnBench.text = getString(if (on) R.string.switch_on else R.string.switch_off)
+            val svc = service
+            if (svc != null) {
+                val path = svc.setBenchProfiling(on)
+                Toast.makeText(this, when {
+                    on && path != null -> getString(R.string.assist_bench_on_path, path)
+                    on -> getString(R.string.assist_bench_on_failed)
+                    else -> getString(R.string.assist_bench_off)
+                }, if (on) Toast.LENGTH_LONG else Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, getString(R.string.assist_bench_saved), Toast.LENGTH_SHORT).show()
+            }
+        }
+
         // bindService 返回值决定是否需要解绑：绑定失败仍置 bound 会在 onDestroy 泄漏连接
         bound = bindService(Intent(this, ScreenAssistService::class.java), connection, Context.BIND_AUTO_CREATE)
+
+        // 检查更新：仅手动触发（不主动检查是产品拍板）。查询走独立线程
+        // （AppUpdateChecker.fetchReleasesJson 为网络 IO，3s 超时），结果回主线程
+        // 弹窗/Toast；按钮检查期间禁用防重复点击。失败如实提示——
+        // api.github.com 在中国大陆通常需可访问 GitHub 的网络环境
+        val btnUpdate = findViewById<Button>(R.id.btn_check_update)
+        btnUpdate.setOnClickListener {
+            btnUpdate.isEnabled = false
+            btnUpdate.text = getString(R.string.update_checking)
+            val checker = com.xqdk.chess.assist.AppUpdateChecker(
+                com.xqdk.chess.BuildConfig.BUILD_DATE
+            )
+            // 一次性线程（查询完毕自然回收，不留滞留池）
+            Thread {
+                val result = checker.check()
+                runOnUiThread {
+                    btnUpdate.isEnabled = true
+                    btnUpdate.text = getString(R.string.update_check_button)
+                    when (result) {
+                        is com.xqdk.chess.assist.UpdateResult.UpToDate ->
+                            Toast.makeText(this,
+                                getString(R.string.update_up_to_date,
+                                    com.xqdk.chess.BuildConfig.BUILD_DATE),
+                                Toast.LENGTH_SHORT).show()
+                        is com.xqdk.chess.assist.UpdateResult.Newer ->
+                            androidx.appcompat.app.AlertDialog.Builder(this)
+                                .setTitle(getString(R.string.update_found_title, result.tag))
+                                .setMessage(
+                                    getString(R.string.update_found_message,
+                                        result.date, com.xqdk.chess.BuildConfig.BUILD_DATE)
+                                )
+                                .setPositiveButton(getString(R.string.update_open_page)) { _, _ ->
+                                    runCatching {
+                                        startActivity(
+                                            Intent(Intent.ACTION_VIEW, Uri.parse(
+                                                com.xqdk.chess.assist.AppUpdateChecker.RELEASES_PAGE))
+                                        )
+                                    }
+                                }
+                                .setNegativeButton(getString(R.string.cancel), null)
+                                .show()
+                        is com.xqdk.chess.assist.UpdateResult.Failure ->
+                            Toast.makeText(this, updateFailureText(result.reason), Toast.LENGTH_LONG).show()
+                    }
+                }
+            }.start()
+        }
     }
+
+    /** 更新查询失败原因 → 本地化文案（网络层只回类型，文案留在 UI 层） */
+    private fun updateFailureText(reason: com.xqdk.chess.assist.UpdateFailure): String =
+        getString(
+            when (reason) {
+                com.xqdk.chess.assist.UpdateFailure.TIMEOUT -> R.string.update_fail_timeout
+                com.xqdk.chess.assist.UpdateFailure.RATE_LIMIT -> R.string.update_fail_rate_limit
+                com.xqdk.chess.assist.UpdateFailure.NOT_FOUND -> R.string.update_fail_not_found
+                com.xqdk.chess.assist.UpdateFailure.UNREACHABLE -> R.string.update_fail_unreachable
+                com.xqdk.chess.assist.UpdateFailure.NO_RELEASE -> R.string.update_fail_no_release
+                com.xqdk.chess.assist.UpdateFailure.OTHER -> R.string.update_fail_other
+            }
+        )
 
     override fun onResume() {
         super.onResume()
@@ -285,9 +369,15 @@ class AssistActivity : LocaleAwareActivity() {
     }
 
     override fun onDestroy() {
+        // 用户主动退出连线页（返回键 / 免责"不同意退出"）= 明确的结束意图：随退停服务，
+        // 不留"前台服务 + 录屏 + 悬浮窗"三件套残留——否则下次打开 App 悬浮窗自动出现
+        // （用户实测 bug：首次使用后退出，再开软件面板已在屏上）。stopSelf 在仍有绑定
+        // 时只是挂起，随后 unbind 才真正销毁服务，顺序不能反。
+        // 配置重建（旋转）isFinishing=false 不受影响；按 Home 切去象棋 App 走 onStop
+        // 不销毁本页，悬浮窗指导照常存活。
+        if (isFinishing) service?.stopGuidance()
         if (bound) unbindService(connection)
         super.onDestroy()
-        // 服务继续运行（前台服务），仅解绑
     }
 
     private fun startCaptureService() {
