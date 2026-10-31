@@ -9,7 +9,6 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.readystatesoftware.android.sqliteassethelper.BuildConfig
 import com.xqdk.chess.R
 import com.xqdk.chess.i18n.LocaleAwareActivity
 import com.xqdk.chess.i18n.LocaleHelper
@@ -27,7 +26,15 @@ class WebviewActivity : LocaleAwareActivity() {
         val datetime = java.util.Date(packageInfo.lastUpdateTime)
         // convert datetime to string with format YYYY-MM-DD HH:MM:SS
         val datetimeString = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(datetime)
-        textViewVersion.text = getString(R.string.version_info, packageInfo.longVersionCode.toInt(), datetimeString)
+        // lastUpdateTime 语义=安装/上次更新时间（原注释"编译时间"失真，体检 P2）
+        // 版本行以 versionName 为主（tag 推导的语义化版本，用户可读），vc 为系统递增计数；
+        // 文案走 strings.xml，随应用语言切换
+        textViewVersion.text = getString(
+            R.string.version_info,
+            packageInfo.versionName,
+            packageInfo.longVersionCode.toInt(),
+            datetimeString
+        )
 
         // bind imageButton and set click listener
         val imageButtonBack: ImageButton = findViewById(R.id.imageButtonBack)
@@ -45,8 +52,13 @@ class WebviewActivity : LocaleAwareActivity() {
         webView.settings.setUseWideViewPort(false)
         webView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS;
 
-        val url = intent.getStringExtra("url") ?: defaultHelpUrl()
-        webView.loadUrl(url)
+        // 白名单：只允许加载应用内 asset 页面。当前唯一调用方传的是硬编码 asset URL，
+        // 但本 Activity 若将来新增入口（deep link 等），任意外链/文件路径会直达 WebView，
+        // 在入口处一律回退默认帮助页（2026-10-31 安全体检加固）
+        val rawUrl = intent.getStringExtra("url") ?: defaultHelpUrl()
+        val safeUrl = if (rawUrl.startsWith("file:///android_asset/")) rawUrl
+                      else defaultHelpUrl()
+        webView.loadUrl(safeUrl)
     }
 
 

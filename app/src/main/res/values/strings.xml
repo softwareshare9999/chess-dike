@@ -84,7 +84,7 @@
     <string name="update_checking">Đang kiểm tra…</string>
     <string name="update_up_to_date">Đã là bản mới nhất (ngày build %1$s)</string>
     <string name="update_found_title">Phát hiện bản mới %1$s</string>
-    <string name="update_found_message">Bản ổn định mới nhất phát hành ngày %1$s (bản hiện tại %2$s).\n\nHãy tải APK từ trang GitHub Release (cần mạng truy cập được GitHub; nếu chữ ký khác bản đã cài, cần gỡ cài đặt rồi cài lại).</string>
+    <string name="update_found_message">Bản ổn định mới nhất phát hành ngày %1$s (bản hiện tại %2$s).\n\nHãy tải APK từ trang GitHub Release (cần mạng truy cập được GitHub).\n\nLưu ý: từ v3.2 là dòng bản an toàn chính thức (chứng chỉ ký mới + kiểm soát vân tay phát hành). Nâng cấp từ bản này và các bản cũ hơn cần gỡ cài đặt rồi cài lại (chỉ một lần, sau đó cập nhật đè bình thường). Chỉ tải từ kênh chính thức, vân tay chứng chỉ có thể kiểm tra trong README.</string>
     <string name="update_open_page">Mở trang tải xuống</string>
     <string name="update_fail_timeout">Hết thời gian chờ mạng, vui lòng thử lại sau</string>
     <string name="update_fail_rate_limit">Yêu cầu ẩn danh tới GitHub bị giới hạn tần suất, thử lại sau</string>
@@ -98,6 +98,7 @@
     <string name="assist_step_recognizing">Đang nhận diện</string>
 
     <string name="assist_capture_ok">Cấp quyền ghi màn hình thành công, dịch vụ nhận diện đã khởi động</string>
+    <string name="assist_capture_start_failed">Khởi động dịch vụ nhận diện thất bại, vui lòng quay lại trang và thử lại</string>
     <string name="assist_capture_denied">Chưa cấp quyền ghi màn hình, không thể nhận diện</string>
     <string name="assist_need_overlay_first">Vui lòng hoàn tất ① cấp quyền cửa sổ nổi trước khi bắt đầu nhận diện</string>
 
@@ -145,6 +146,7 @@
     <string name="status_engine_init_fail">Khởi tạo engine nhận diện thất bại: hãy thử khởi động lại ứng dụng (cài lại có thể khắc phục)</string>
     <string name="status_recognizing_board">Đang nhận diện bàn cờ…\nHãy để bàn cờ hiện đầy đủ, không bị che</string>
     <string name="status_unstable">Nhận diện không ổn định\nHãy để bàn cờ hiện đầy đủ, không bị che\nTự động phục hồi khi hình ảnh ổn định</string>
+    <string name="status_capture_expired">Quyền ghi màn hình đã hết hiệu lực\nVui lòng về trang liên kết và nhấn bắt đầu lại</string>
     <string name="status_onnx_fail_yolo">Tải engine ONNX thất bại\nĐã chuyển sang nhận diện YOLO</string>
     <string name="status_engine_warming">Engine đang khởi động…</string>
     <string name="status_engine_thinking">Engine đang tính…</string>
@@ -216,7 +218,7 @@
     <string name="onnx_classifier_not_loaded">classifier session chưa được tải</string>
 
     <!-- ===== Webview / about page ===== -->
-    <string name="version_info">Phiên bản: %1$d\nThời gian biên dịch: %2$s</string>
+    <string name="version_info">Phiên bản: %1$s (vc %2$d)\nNgày cài đặt: %3$s</string>
 
     <!-- ===== Move notation (Vietnamese long algebraic) ===== -->
     <string name="move_unknown">Nước không rõ</string>
