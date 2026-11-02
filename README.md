@@ -174,10 +174,16 @@ flavor 出包）并发布 `build-<versionCode>` Release，便于随时下载；�
   9ca440393471915a0e6983c53db714133f36f7d327cb487b8a82451d6427721d
   ```
 
-**版本规则**：`versionCode` = git 提交数（`app/build.gradle.kts` 的 `gitCommitCount`，
-无 git 环境兜底为 1，且带 43 的下限地板——保证历次交付版本号单调递增、老设备可覆盖升级）；
+**版本规则**：`versionCode` = git 提交数（`app/build.gradle.kts` 的 `gitCommitCount`）
+**+ CI 构建号**（`BUILD_NUMBER` = `github.run_number`，本地构建为 0），并对提交数取 43
+的下限地板（无 git 环境兜底为 1）——保证历次交付版本号**严格单调递增**、老设备可覆盖
+升级。地板是永久下限而非临时补丁：本 fork 用 merge 同步上游，每次同步只 +1 笔合并
+提交，提交数长期低于 43，若地板随提交数增长消失，每次同步出包都会回落到同一个
+`versionCode`（历史实据：build-33 与 build-35 两个 Release 的产物都是 vc43）。
+Release tag 取 `build-<versionCode>`，其值从**产物名**读取而非重新计算，保证 tag 与
+包内版本号永远一致；
 `versionName` 不手写，由 git 标签推导（`git describe --tags --match "v*"` 去掉前导
-`v`）——发布提交上 = `3.2`，标签后的开发构建 = `3.2-1-g<hash>`，无 git/标签回退
+`v`）——发布提交上 = `3.3`，标签后的开发构建 = `3.3-4-g<hash>`，无 git/标签回退
 `0.0.0-dev`，版本号只有 tag 这一个事实源；
 APK 产物名 `XQDK_<日期>_<versionCode>_<变体>-<构建类型>.apk`。
 

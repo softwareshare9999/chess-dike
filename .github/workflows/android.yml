@@ -104,6 +104,10 @@ jobs:
 
     - name: Assemble Release APKs
       run: bash gradlew assembleArmv8Release assembleArmv8-dotprodRelease --no-daemon --console=plain
+      env:
+        # versionCode 偏移：Gradle 读 BUILD_NUMBER 加到 git 提交数地板之上，保证同一
+        # 提交重跑（workflow_dispatch / 重试）也能产出可覆盖升级的新 versionCode。
+        BUILD_NUMBER: ${{ github.run_number }}
 
     # 本 fork 的每次推送都出包：APK 另打一层 zip，方便手机端直接下载解压
     - name: Collect APKs
@@ -116,7 +120,12 @@ jobs:
           zip "${f%.apk}.zip" "$f"
         done
         ls -lh
-        echo "ver=$(git rev-list HEAD --count)" >> "$GITHUB_OUTPUT"
+        # versionCode 从产物名读取（XQDK_<日期>_<versionCode>_<变体>-<构建类型>.apk），
+        # 不自己再算一遍：地板 / BUILD_NUMBER 偏移都在 Gradle 里，重算必然漂移——
+        # 早先用 git rev-list 裸提交数命名 Release（build-33/build-35 两个 tag），
+        # 而两者的产物其实都是 vc43，tag 与包内版本号对不上且会重复。
+        APK_VC=$(ls *_armv8-release.apk | head -1 | cut -d_ -f3)
+        echo "ver=${APK_VC}" >> "$GITHUB_OUTPUT"
 
     # 签名指纹门禁：tag 构建挂 Release 前逐包核验证书指纹=官方现行密钥（2026-10-31
     # 轮换后的 cchess.release.2026.jks，指纹与 README 公示一致），防"Secrets 缺失/

@@ -63,8 +63,16 @@ android {
         // versionCode 地板 43（2026-10-29 稳定版压平拍板）：公开仓压成「已有 23 笔 +
         // 单笔稳定版」后 git 提交数回落到 24，而本批真机回归包是 vc43——不加地板
         // 会让装过 vc43 的设备判版本降级、装不上（参照内阁 coerceAtLeast 做法）。
-        // 提交数超过 43 后本行自动失效，只增不减。
-        versionCode = gitCommitCount.coerceAtLeast(43)
+        //
+        // 地板 43 是**永久**下限，不是"超过 43 就自动失效"：本 fork 用 merge 同步上游
+        // （不是 rebase/压平），每次同步只 +1 笔合并提交，提交数长期低于 43——若地板
+        // 随提交数增长消失，每次同步出包都会回落到同一个 versionCode，老设备无法
+        // 覆盖升级。历史实据：build-33 与 build-35 两个 Release 产物都是 vc43。
+        // 真正保证单调递增的是下方版本号来源（提交数 + BUILD_NUMBER），43 只兜无 git 构建。
+        val versionCodeBase = gitCommitCount.coerceAtLeast(43)
+        val ciBuildNumber = providers.environmentVariable("BUILD_NUMBER")
+            .map { it.trim().toInt() }.orNull ?: 0
+        versionCode = versionCodeBase + ciBuildNumber
         versionName = gitVersionName
         // 构建日期（yyyyMMdd）：检查更新的版本比较依据——公开仓"稳定版=一笔提交"
         // 会强推压平，versionCode（=提交数）随压平回落、前后不可比，与 cabinet
