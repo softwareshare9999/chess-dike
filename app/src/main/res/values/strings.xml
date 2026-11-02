@@ -30,7 +30,7 @@
     <string name="disclaimer_title">Tuyên bố miễn trừ</string>
     <string name="disclaimer_agree">Đồng ý và tiếp tục</string>
     <string name="disclaimer_disagree">Không đồng ý và thoát</string>
-    <string name="disclaimer_body">Phần mềm này (Tượng Kỳ Dick) là công cụ hỗ trợ học tập cờ tướng, chỉ dùng cho học tập cá nhân, ôn tập và giao lưu kỹ thuật. Vui lòng đọc kỹ các điều khoản sau trước khi sử dụng:\n\n1. Phần mềm chỉ nhận diện màn hình qua quyền ghi màn hình hệ thống và hiển thị gợi ý nước đi trên cửa sổ nổi; không có tự động đi quân, tiêm cảm ứng, dịch vụ trợ năng, Root/Xposed. Mọi nước đi do người chơi thao tác thủ công.\n\n2. Nghiêm cấm dùng phần mềm này cho bất kỳ giải đấu chính thức, ván có hệ số Elo, nền tảng cờ mạng hoặc cờ bạc nào vi phạm quy tắc nền tảng và pháp luật; mọi hậu quả do người dùng tự chịu.\n\n3. Chỉ dùng để học tập nghiên cứu; vui lòng tự xóa trong vòng 24 giờ sau khi nhận được.\n\n4. Phần mềm được cung cấp “nguyên trạng”, không bảo đảm tính sẵn sàng hay độ chính xác, và không chịu trách nhiệm với bất kỳ thiệt hại trực tiếp hay gián tiếp nào do việc sử dụng.\n\nNhấn “Đồng ý và tiếp tục” nghĩa là bạn đã đọc, hiểu và đồng ý với toàn bộ các điều khoản trên.</string>
+    <string name="disclaimer_body">Phần mềm này (Tượng Kỳ Dick) là công cụ hỗ trợ học tập cờ tướng, chỉ dùng cho học tập cá nhân, ôn tập và giao lưu kỹ thuật. Vui lòng đọc kỹ các điều khoản sau trước khi sử dụng:\n\n1. Phần mềm chỉ nhận diện màn hình qua quyền ghi màn hình hệ thống và hiển thị gợi ý nước đi trên cửa sổ nổi; không có tự động đi quân, tiêm cảm ứng, dịch vụ trợ năng, Root/Xposed. Mọi nước đi do người chơi thao tác thủ công.\n\n2. Nghiêm cấm dùng phần mềm này cho bất kỳ giải đấu chính thức, ván có hệ số Elo, nền tảng cờ mạng hoặc cờ bạc nào vi phạm quy tắc nền tảng và pháp luật; mọi hậu quả do người dùng tự chịu.\n\n3. Phần mềm được cung cấp “nguyên trạng”, không bảo đảm tính sẵn sàng hay độ chính xác, và không chịu trách nhiệm với bất kỳ thiệt hại trực tiếp hay gián tiếp nào do việc sử dụng.\n\nNhấn “Đồng ý và tiếp tục” nghĩa là bạn đã đọc, hiểu và đồng ý với toàn bộ các điều khoản trên.</string>
     <string name="credits_body">Ghi nhận:\n· Dự án dựa trên mã nguồn mở “象棋鱼” (tác giả zfdang, GitHub: zfdang/chinese-chess-android);\n· Trọng số nhận diện quân YOLO từ dự án Vincentzyx/VinXiangQi;\n· Engine nhận diện ONNX hai bước (RTMPose góc + phân loại Swin) từ dự án Shirakawa-Kotone/chinese-chess-helper;\n· Nền tảng engine: đội Pikafish và DroidFish (Peter Österlund), giấy phép GPL-3.0.</string>
     <string name="about_title">Giới thiệu · Tượng Kỳ Dick</string>
     <string name="about_body">Tượng Kỳ Dick XQDK v%1$s\n\nTính năng nổi bật:\n· Liên kết AI: nhận diện màn hình ONNX góc (chính) / YOLO không cần hiệu chỉnh, tự nhận hướng, gợi ý nước đi thời gian thực trên cửa sổ nổi, tra cứu khai cuộc, đa ứng viên và chế độ chỉnh tay khẩn cấp (chỉ nhận diện và gợi ý, không tự đi quân);\n· Tích hợp engine Pikafish và thư viện khai cuộc Cát Khố, chọn chế độ tính theo độ sâu hoặc theo thời gian.\n\n</string>
@@ -79,6 +79,10 @@
     <string name="assist_bench_on_failed">Đã bật chẩn đoán: tạo tệp thất bại, hãy dùng logcat lọc AssistService để thu thập</string>
     <string name="assist_bench_off">Đã tắt chẩn đoán, tệp đã được kết thúc</string>
     <string name="assist_bench_saved">Đã lưu, có hiệu lực từ lần nhận diện tiếp theo</string>
+    <string name="assist_precompute_label">Tính trước khi rảnh</string>
+    <string name="assist_precompute_hint">Bản thử nghiệm β: tính trước khi đối phương suy nghĩ; máy nóng rõ rệt thì tắt đi</string>
+    <string name="assist_precompute_on">Đã bật tính trước (β)</string>
+    <string name="assist_precompute_off">Đã tắt tính trước</string>
     <string name="assist_update_label">Kiểm tra cập nhật</string>
     <string name="update_check_button">Kiểm tra</string>
     <string name="update_checking">Đang kiểm tra…</string>
@@ -92,7 +96,7 @@
     <string name="update_fail_unreachable">Mạng không truy cập được api.github.com — cần môi trường mạng vào được GitHub</string>
     <string name="update_fail_no_release">Chưa có bản phát hành chính thức</string>
     <string name="update_fail_other">Tra cứu thất bại, vui lòng thử lại sau</string>
-    <string name="assist_compliance">Tuyên bố tuân thủ: tính năng này chỉ nhận diện hình ảnh qua quyền ghi màn hình hệ thống và hiển thị gợi ý nước đi, thuộc công cụ hỗ trợ học cờ tướng, chỉ dùng cho học tập nghiên cứu, vui lòng tự xóa trong 24 giờ sau khi nhận. Không bao gồm tự động đi quân, tiêm cảm ứng, dịch vụ trợ năng, Root/Xposed hay đọc dữ liệu ứng dụng khác; mọi nước đi trong ván đều do người chơi thao tác thủ công.</string>
+    <string name="assist_compliance">Tuyên bố tuân thủ: tính năng này chỉ nhận diện hình ảnh qua quyền ghi màn hình hệ thống và hiển thị gợi ý nước đi, thuộc công cụ hỗ trợ học cờ tướng, chỉ dùng cho học tập nghiên cứu. Không bao gồm tự động đi quân, tiêm cảm ứng, dịch vụ trợ năng, Root/Xposed hay đọc dữ liệu ứng dụng khác; mọi nước đi trong ván đều do người chơi thao tác thủ công.</string>
     <string name="overlay_multipv_n_placeholder">3 biến</string>
     <string name="version_label">Phiên bản:</string>
     <string name="assist_step_recognizing">Đang nhận diện</string>
@@ -193,6 +197,7 @@
     <string name="candidate_suggest">Gợi ý %1$s</string>
     <string name="candidate_alt">Dự phòng %1$d %2$s</string>
     <string name="candidate_tentative"> (tạm định)</string>
+    <string name="candidate_precompute_hit"> (dự đoán β)</string>
     <string name="candidate_depth_score">%1$s sâu %2$d</string>
     <string name="candidate_if_opp">Nếu đối phương đi %1$s\nTa nên đi %2$s</string>
     <string name="candidate_no_moves">Không có nước hợp lệ\n(bí nước hoặc đã hết nước đi)</string>

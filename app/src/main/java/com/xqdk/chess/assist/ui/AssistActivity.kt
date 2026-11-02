@@ -43,9 +43,15 @@ class AssistActivity : LocaleAwareActivity() {
     companion object {
 
         /**
-         * 免责声明（四条条款，对齐 Cabinet 口径；首启弹窗 / About / 帮助页 / README
+         * 免责声明（三条条款，对齐 Cabinet 口径；首启弹窗 / About / 帮助页 / README
          * 共用同一文案，任何修改需四处同步）。文案随应用语言本地化，
          * 见 res/values/strings.xml（越南语默认）与 values-zh-rCN/strings.xml（中文）。
+         *
+         * 原第三条"仅供学习研究，24 小时内自行删除"已删（随上游 v3.3 同步，2026-11-02）：
+         * 本项目以 GPL-3.0 永久授权公开分发，该条款与授权自相矛盾、无法律效力且易被
+         * 截图断章——免责意图由"现状"条款与第二条使用边界承担。本 fork 的三处本地化
+         * 资源（values/、values-zh-rCN/ 的 disclaimer_body 与 assist_compliance、两个
+         * 帮助页）已同步删除该条，保持四处同口径。
          */
         fun disclaimer(ctx: Context): String = ctx.getString(R.string.disclaimer_body)
 
@@ -120,6 +126,7 @@ class AssistActivity : LocaleAwareActivity() {
             service?.applyOverlayTheme(OverlayTheme.fromKey(cfg.overlayTheme))
             service?.setRecognizerEngine(cfg.recognizerEngine)
             service?.setSearchMode(cfg.searchMode == "time")
+            service?.setPrecomputeEnabled(cfg.precomputeEnabled)
             refreshStatus()
         }
 
@@ -286,6 +293,26 @@ class AssistActivity : LocaleAwareActivity() {
                     on -> getString(R.string.assist_bench_on_failed)
                     else -> getString(R.string.assist_bench_off)
                 }, if (on) Toast.LENGTH_LONG else Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, getString(R.string.assist_bench_saved), Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // 空闲预计算（β）：对方思考期提前计算，命中预判线零等待出着。连线页开关
+        // 热生效（服务在线即时生效；未绑定也先落盘配置，服务启动读到即生效——与
+        // 诊断开关同口径）；β 期不做档位 UI，搜索参数与常规完全一致
+        val btnPrecompute = findViewById<Button>(R.id.btn_precompute)
+        btnPrecompute.text = getString(if (cfg.precomputeEnabled) R.string.switch_on else R.string.switch_off)
+        btnPrecompute.setOnClickListener {
+            val on = !cfg.precomputeEnabled
+            cfg.precomputeEnabled = on
+            btnPrecompute.text = getString(if (on) R.string.switch_on else R.string.switch_off)
+            val svc = service
+            if (svc != null) {
+                svc.setPrecomputeEnabled(on)
+                Toast.makeText(this,
+                    getString(if (on) R.string.assist_precompute_on else R.string.assist_precompute_off),
+                    Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, getString(R.string.assist_bench_saved), Toast.LENGTH_SHORT).show()
             }
