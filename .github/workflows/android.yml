@@ -109,16 +109,14 @@ jobs:
         # 提交重跑（workflow_dispatch / 重试）也能产出可覆盖升级的新 versionCode。
         BUILD_NUMBER: ${{ github.run_number }}
 
-    # 本 fork 的每次推送都出包：APK 另打一层 zip，方便手机端直接下载解压
+    # 本 fork 的每次推送都出包：APK 直接作为 Release 资产（2026-11-14 用户拍板，
+    # 不再套一层 zip——多一步解压对手机端反而更麻烦，且 APK 本身即安装包）
     - name: Collect APKs
       id: apk
       run: |
         mkdir -p dist
         find app/build/outputs/apk -name "*.apk" -exec cp {} dist/ \;
         cd dist
-        for f in *.apk; do
-          zip "${f%.apk}.zip" "$f"
-        done
         ls -lh
         # versionCode 从产物名读取（XQDK_<日期>_<versionCode>_<变体>-<构建类型>.apk），
         # 不自己再算一遍：地板 / BUILD_NUMBER 偏移都在 Gradle 里，重算必然漂移——
@@ -162,7 +160,7 @@ jobs:
       run: |
         VER="${{ steps.apk.outputs.ver }}"
         TAG="build-${VER}"
-        NOTES="XQDK fork build (versionCode=${VER}). Download a .zip, extract the .apk, and install on an Android device.
+        NOTES="XQDK fork build (versionCode=${VER}). Download a .apk and install it on an Android device.
 
         - \`*_armv8-dotprod-release.apk\`: recommended; needs ARMv8.2 dotprod (Snapdragon 855 / Kirin 990 / Dimensity 1000 and up)
         - \`*_armv8-release.apk\`: compatible variant for older CPUs
@@ -171,10 +169,10 @@ jobs:
         > otherwise they are **debug-signed** and cannot install over an existing release-signed
         > build (uninstall first). Official v* releases are fingerprint-gated separately."
         if gh release view "$TAG" >/dev/null 2>&1; then
-          gh release upload "$TAG" dist/*.zip --clobber
+          gh release upload "$TAG" dist/*.apk --clobber
           gh release edit "$TAG" --notes "$NOTES"
         else
-          gh release create "$TAG" dist/*.zip --title "Fork build ${VER}" --notes "$NOTES"
+          gh release create "$TAG" dist/*.apk --title "Fork build ${VER}" --notes "$NOTES"
         fi
         echo "Release URL: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${TAG}"
 
@@ -185,7 +183,6 @@ jobs:
       with:
         files: |
           dist/*.apk
-          dist/*.zip
         body: |
           稳定版自动构建（tag：${{ github.ref_name }}）。versionCode = git 提交数，版本名与构建配置见 `app/build.gradle.kts`。
 
