@@ -25,6 +25,37 @@
     <string name="main_help">帮助</string>
     <string name="main_about">关于</string>
 
+    <!-- ===== 开局分流落地页 ===== -->
+    <string name="launcher_tagline">象棋学习助手 · 全离线开源</string>
+    <string name="launcher_learn_title">学习模式</string>
+    <string name="launcher_learn_desc">人机对弈 · 走子纠正教学 · 走势曲线</string>
+    <string name="launcher_assist_title">连线模式</string>
+    <string name="launcher_assist_desc">屏幕识别 · 悬浮窗走法指导</string>
+    <string name="version_footer">v%1$s · 构建 %2$s</string>
+
+    <!-- ===== 学习模式 ===== -->
+    <string name="learn_new_game">开新局</string>
+    <string name="learn_new_game_confirm">当前对局将丢弃并重新开始，确定？</string>
+    <string name="learn_undo">悔棋</string>
+    <string name="learn_side_red">执红</string>
+    <string name="learn_side_black">执黑</string>
+    <string name="learn_side_switch">切换执方</string>
+    <string name="learn_side_switch_confirm">切换为执%1$s方将开新局，确定？</string>
+    <string name="learn_side_switch_ok">切换并开新局</string>
+    <string name="learn_trend_title">走势曲线（我方视角 · 均势为中线）</string>
+    <string name="learn_state_human_turn">轮到你走</string>
+    <string name="learn_state_evaluating">评估中…</string>
+    <string name="learn_state_red_warning">这步欠佳 · 红箭头是皮卡鱼的应着</string>
+    <string name="learn_state_correction_wait">纠正中… 参考绿色箭头更正</string>
+    <string name="learn_state_correction_hint">参考绿色箭头更正（灰框为被撤的那步）</string>
+    <string name="learn_state_waiting_reply">皮卡鱼思考中…</string>
+    <string name="learn_state_game_over">对局结束</string>
+    <string name="learn_my_score">我方 %1$s</string>
+    <string name="learn_result_win_mate">我方获胜 · 将杀</string>
+    <string name="learn_result_win_stalemate">我方获胜 · 对方困毙</string>
+    <string name="learn_result_loss_mated">皮卡鱼获胜 · 我方被将杀</string>
+    <string name="learn_result_loss_stalemate">皮卡鱼获胜 · 我方困毙</string>
+
     <string name="disclaimer_title">免责声明</string>
     <string name="disclaimer_agree">同意并继续</string>
     <string name="disclaimer_disagree">不同意并退出</string>

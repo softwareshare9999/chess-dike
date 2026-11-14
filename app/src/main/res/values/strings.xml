@@ -27,6 +27,37 @@
     <string name="main_help">Trợ giúp</string>
     <string name="main_about">Giới thiệu</string>
 
+    <!-- ===== Launcher (mode picker) ===== -->
+    <string name="launcher_tagline">Trợ thủ học cờ tướng · Ngoại tuyến hoàn toàn, mã nguồn mở</string>
+    <string name="launcher_learn_title">Chế độ học</string>
+    <string name="launcher_learn_desc">Đấu với máy · Dạy sửa nước đi · Đường xu hướng</string>
+    <string name="launcher_assist_title">Chế độ liên kết</string>
+    <string name="launcher_assist_desc">Nhận diện màn hình · Gợi ý nước đi trên cửa sổ nổi</string>
+    <string name="version_footer">v%1$s · bản dựng %2$s</string>
+
+    <!-- ===== Learning mode ===== -->
+    <string name="learn_new_game">Ván mới</string>
+    <string name="learn_new_game_confirm">Ván hiện tại sẽ bị bỏ và bắt đầu lại, chắc chắn?</string>
+    <string name="learn_undo">Hối kỳ</string>
+    <string name="learn_side_red">Đi đỏ</string>
+    <string name="learn_side_black">Đi đen</string>
+    <string name="learn_side_switch">Đổi bên đi</string>
+    <string name="learn_side_switch_confirm">Chuyển sang đi %1$s sẽ mở ván mới, chắc chắn?</string>
+    <string name="learn_side_switch_ok">Đổi và mở ván mới</string>
+    <string name="learn_trend_title">Đường xu hướng (góc nhìn bên ta · đường giữa là cân bằng)</string>
+    <string name="learn_state_human_turn">Lượt bạn đi</string>
+    <string name="learn_state_evaluating">Đang đánh giá…</string>
+    <string name="learn_state_red_warning">Nước này chưa tốt · mũi tên đỏ là nước đáp của Pikafish</string>
+    <string name="learn_state_correction_wait">Đang sửa… hãy xem mũi tên xanh để sửa lại</string>
+    <string name="learn_state_correction_hint">Xem mũi tên xanh để sửa lại (khung xám là nước vừa bị rút)</string>
+    <string name="learn_state_waiting_reply">Pikafish đang nghĩ…</string>
+    <string name="learn_state_game_over">Ván đã kết thúc</string>
+    <string name="learn_my_score">Bên ta %1$s</string>
+    <string name="learn_result_win_mate">Bên ta thắng · chiếu bí</string>
+    <string name="learn_result_win_stalemate">Bên ta thắng · đối phương bí nước</string>
+    <string name="learn_result_loss_mated">Pikafish thắng · bên ta bị chiếu bí</string>
+    <string name="learn_result_loss_stalemate">Pikafish thắng · bên ta bí nước</string>
+
     <string name="disclaimer_title">Tuyên bố miễn trừ</string>
     <string name="disclaimer_agree">Đồng ý và tiếp tục</string>
     <string name="disclaimer_disagree">Không đồng ý và thoát</string>

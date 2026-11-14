@@ -16,6 +16,35 @@
 <body>
 <h1>Tượng Kỳ Dick · Hướng dẫn sử dụng</h1>
 
+<h2>Trang phân nhánh khi mở app</h2>
+<ul>
+  <li>Mở ứng dụng sẽ vào trang phân nhánh: nhấn <b>Chế độ học</b> (đấu với máy + dạy sửa nước đi)
+      hoặc <b>Chế độ liên kết</b> (nhận diện màn hình + gợi ý trên cửa sổ nổi) để vào chức năng tương ứng;
+      mục trợ giúp, giới thiệu và kiểm tra cập nhật đều ở trang này.</li>
+</ul>
+
+<h2>Chế độ học (đấu với máy · dạy sửa nước đi)</h2>
+<ul>
+  <li>Bàn cờ trong ứng dụng đấu với Pikafish, chọn đi trước (đỏ) hoặc đi sau (đen) — chip ở đáy,
+      đổi bên là mở ván mới;</li>
+  <li>Bình thường <b>không đưa ra gợi ý nào</b>: bạn đi một nước, engine đánh giá ngay — nước tốt
+      (tổn thất so với nước trước ≤ 0.8 tốt) được cho qua và hiện điểm của bên ta, Pikafish lập tức đáp;</li>
+  <li><b>Sửa nước dở</b>: Pikafish bật nước đáp màu đỏ (mũi tên nổi + hiệu ứng đỏ) → quân của bạn
+      trở về vị trí cũ, điểm đến được đánh dấu bằng quân mờ + khung nét đứt xám → ba lời giải
+      hướng dẫn màu xanh (mũi tên nổi + hiệu ứng xanh) kèm điểm âm, chờ bạn sửa lại; sửa xong máy đáp lại;</li>
+  <li><b>Cố chấp</b>: đi lại đúng nước vừa bị rút về → được cho qua, Pikafish dùng chính nước ở mũi tên đỏ
+      để đáp; ba mũi tên xanh chia ba mức đậm nhạt theo độ khuyến nghị (đậm nhất = ưu tiên số một);</li>
+  <li><b>Độ đậm mũi tên là độ ưu tiên</b>: trong ba mũi tên xanh, màu đậm nhất là nước engine ưu tiên nhất,
+      càng nhạt càng xếp sau; mũi tên đỏ trong lúc chờ sửa sẽ mờ và mảnh đi, chuyển thành "điềm báo nước
+      bạn sẽ phải chịu nếu cố chấp";</li>
+  <li>Giao diện chỉ gồm: ván mới / hối kỳ / đổi bên đi / đường cong xu hướng (đường điểm đánh giá theo
+      góc nhìn bên ta, đường giữa là cân bằng); chiếu tướng, chiếu bí, bí nước được tự động phân thắng thua;</li>
+  <li><b>Tự động lưu tiến độ</b>: khi thoát chế độ học, ván hiện tại được tự động lưu lại, lần sau vào
+      sẽ tự động khôi phục (bàn cờ, đường xu hướng, chuỗi hối kỳ và kết quả ván đều được giữ);</li>
+  <li>Hai engine loại trừ nhau: vào chế độ học sẽ tự động dừng nhận diện liên kết; về trang phân nhánh
+      có thể vào lại liên kết.</li>
+</ul>
+
 <h2>Liên kết (hướng dẫn nhận diện màn hình AI)</h2>
 <ul>
   <li>① Cấp quyền cửa sổ nổi → ② Cho phép thông báo → ③ Cấp quyền ghi màn hình và khởi động;</li>
@@ -23,7 +52,7 @@
   <li>Nút trên panel: <b>Đổi nước</b> (chuyển ứng viên), <b>N biến</b> (số nhánh MultiPV 1-3 lặp vòng, mặc định 1 nhánh = dồn toàn sức tính; nhiều nhánh có phương án dự phòng nhưng chậm hơn ở cùng độ sâu), <b>Hối kỳ</b> (lùi một nước), <b>Chỉnh tay</b> (khi nhận diện lỗi, chỉnh bàn nhỏ thủ công),
       <b>Độ sâu</b> (chế độ độ sâu, 12/20/24) hoặc <b>Thời gian</b> (chế độ thời gian, 1-30 giây; hiển thị theo chế độ tính đã chọn ở trang liên kết), <b>Hash</b> (kích thước bảng thay thế engine, điều chỉnh vòng từ 256MB), <b>Engine</b> (chuyển nóng ONNX/YOLO),
       <b>Cập nhật</b> (sửa bên đi), <b>Chớp</b> (ngắt tìm kiếm hiện tại, nhận ngay phương án tốt nhất), <b>Dừng/Đóng</b> (đóng cần xác nhận lần hai);</li>
-  <li>Trang liên kết cho phép chuyển nóng engine nhận diện (ONNX góc / YOLO), chế độ tính (độ sâu/thời gian — cửa sổ nổi chỉ hiện đúng mức tương ứng) và giao diện cửa sổ nổi (Kính tối / Đen OLED / Giấy sáng);</li>
+  <li>Trang liên kết cho phép chuyển nóng engine nhận diện (ONNX góc / YOLO), chế độ tính (độ sâu/thời gian — cửa sổ nổi chỉ hiện đúng mức tương ứng); giao diện cửa sổ nổi (Kính tối / Đen OLED / Giấy sáng) chuyển ngay bên dưới mục chế độ tính;</li>
   <li>Chạm bàn cờ nhỏ để đổi ứng viên; gợi ý ổn định hiện mũi tên xanh, tạm định là xanh dương.</li>
   <li><b>Chẩn đoán hiệu năng</b> (khu cài đặt trang liên kết): bật khi thấy nhận diện chậm đi; ứng dụng tạo tệp XQDK_诊断_*.md trong thư mục Download của hệ thống và ghi rõ vị trí,
       liên tục ghi lại tham số phiên, sự kiện (nạp/chuyển/tự phục hồi engine, xác nhận bàn cờ), thời gian từng phân đoạn và nhịp của mỗi khung hình nhận diện,
@@ -31,8 +60,11 @@
       chỉ cần gửi lại tệp đó để xác định điểm nghẽn.</li>
   <li><b>Tính trước khi rảnh</b> (bản thử nghiệm β, công tắc ở khu cài đặt trang liên kết, mặc định bật): trong lúc đối phương suy nghĩ, engine tính trước thế cờ hiện tại;
       khi đối phương đi đúng tuyến dự đoán, gợi ý của ta hiện ra tức thì (kèm nhãn «dự đoán β»); nếu máy nóng rõ rệt có thể tắt, khi tắt sẽ trở về hành vi thường;</li>
-  <li><b>Kiểm tra cập nhật</b> (khu cài đặt trang liên kết): nhấn thủ công để tra bản chính thức trên GitHub (không tự động kiểm tra);
+  <li><b>Ba biến một lần</b>: chạm hai lần vào bàn cờ nhỏ trong vòng 3 giây, thế cờ hiện tại được phân tích lại
+      một lần theo 3 nhánh; ba ứng viên chuyển đổi được, mức biến đổi thường lệ không đổi và tự trở lại ở thế tiếp theo;</li>
+  <li><b>Kiểm tra cập nhật</b> (chân trang phiên bản ở trang phân nhánh): nhấn thủ công để tra bản chính thức trên GitHub (không tự động kiểm tra);
       phát hiện bản mới sẽ hiện hộp thoại và có thể mở trang tải xuống. Việc tra cứu cần môi trường mạng truy cập được GitHub, khi thất bại sẽ báo lý do.</li>
+</ul>
 </ul>
 
 <h2>Tuân thủ và miễn trừ trách nhiệm</h2>

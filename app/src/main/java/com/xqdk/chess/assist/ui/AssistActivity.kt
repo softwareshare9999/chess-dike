@@ -32,35 +32,13 @@ import com.xqdk.chess.i18n.LocaleHelper
 /**
  * 连线工作页（美学终稿 §3.2）：纸底仪器面（识别点阵 + 状态行 + hero + 河界线）+
  * 三步授权清单（几何序号行）+ 主按钮（全 App 唯一主操作：开始/停止连线）+
- * 设置（悬浮窗主题循环 / 识别引擎单选 / 思考制式单选）+ 底部帮助/关于入口。
+ * 设置（悬浮窗主题循环 / 识别引擎单选 / 思考制式单选）。
  * 棋盘识别全自动，此页只负责权限与启停。
- * 本页同时是 launcher（2026-10-29 砍主页跳转层：原"主页 → 开始连线"中间层移除，
- * 打开应用即达连线页；免责弹窗随启动语义一并迁入）。
+ * 由开局分流落地页（LauncherActivity，2026-11-09 引入）进入；帮助/关于/免责弹窗
+ * 已上移落地页（本页不再重复），返回落地页即随退停服务（onDestroy isFinishing）。
  * 交互契约一行不删：每秒轮询、变化才回填、启动守卫、运行中热切换、绑定补应用配置。
  */
 class AssistActivity : LocaleAwareActivity() {
-
-    companion object {
-
-        /**
-         * 免责声明（三条条款，对齐 Cabinet 口径；首启弹窗 / About / 帮助页 / README
-         * 共用同一文案，任何修改需四处同步）。文案随应用语言本地化，
-         * 见 res/values/strings.xml（越南语默认）与 values-zh-rCN/strings.xml（中文）。
-         *
-         * 原第三条"仅供学习研究，24 小时内自行删除"已删（随上游 v3.3 同步，2026-11-02）：
-         * 本项目以 GPL-3.0 永久授权公开分发，该条款与授权自相矛盾、无法律效力且易被
-         * 截图断章——免责意图由"现状"条款与第二条使用边界承担。本 fork 的三处本地化
-         * 资源（values/、values-zh-rCN/ 的 disclaimer_body 与 assist_compliance、两个
-         * 帮助页）已同步删除该条，保持四处同口径。
-         */
-        fun disclaimer(ctx: Context): String = ctx.getString(R.string.disclaimer_body)
-
-        /** 鸣谢（品牌说明中唯一保留"象棋鱼"字眼处） */
-        fun credits(ctx: Context): String = ctx.getString(R.string.credits_body)
-
-        /** 免责同意态的 savedInstanceState 键（仅跨配置重建传递，不持久化——冷启动必重弹） */
-        private const val KEY_DISCLAIMER_AGREED = "disclaimer_agreed"
-    }
 
     /** 步骤行状态（几何序号语义：完成玉✓实心 / 待办朱砂描边 / 未开始灰空心） */
     private enum class StepState { DONE, TODO, LOCKED }
@@ -70,11 +48,6 @@ class AssistActivity : LocaleAwareActivity() {
 
     private var captureIntentCode = -1
     private var captureIntentData: Intent? = null
-
-    /** 免责同意态（仅本实例内存，经 savedInstanceState 跨配置重建）：普通 AlertDialog
-     *  不随配置重建恢复——弹窗在屏时旋转会被系统强制关闭，冷启动条件又不再成立，
-     *  不补弹即静默旁路合规门槛（体检 P1）。未同意 ⇒ 重建后 onResume 补弹。 */
-    private var disclaimerAgreed = false
 
     // 步骤行（①②整行可点，③静态说明行）
     private lateinit var btnOverlay: View
@@ -162,28 +135,8 @@ class AssistActivity : LocaleAwareActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.assist_activity)
 
-        // 每次应用启动必弹（本页即 launcher，继承原主页启动语义）；savedInstanceState
-        // 守卫：配置重建走恢复路径，不在同一次启动内重复弹窗；isTaskRoot 守卫：
-        // singleTask 复用/外部唤起（通知点入）不新建实例不重弹，只对真冷启动弹
-        if (savedInstanceState == null && isTaskRoot()) {
-            maybeShowDisclaimer()
-        } else {
-            // 配置重建恢复路径：恢复上一实例的同意态；尚未同意（弹窗在屏时旋转等）
-            // 则补弹——冷启动条件在重建路径永不成立，不补即被静默旁路（体检 P1）
-            disclaimerAgreed = savedInstanceState?.getBoolean(KEY_DISCLAIMER_AGREED, false) ?: false
-            if (!disclaimerAgreed) maybeShowDisclaimer()
-        }
-
-        // 底部入口：帮助（本地帮助页）/ 关于（本地对话框）——原主页文字入口迁入连线页
-        findViewById<Button>(R.id.button_help).setOnClickListener {
-            val helpAsset = if (LocaleHelper.isChinese(this)) "help-zh.html" else "help.html"
-            val intent = Intent(this, com.xqdk.chess.views.WebviewActivity::class.java).apply {
-                putExtra("url", "file:///android_asset/$helpAsset")
-            }
-            startActivity(intent)
-        }
-        findViewById<Button>(R.id.button_about).setOnClickListener { showAboutDialog() }
-        findViewById<Button>(R.id.button_language).setOnClickListener { showLanguageDialog() }
+        // 免责弹窗/帮助/关于/检查更新已上移开局分流落地页（LauncherActivity，2026-11-09），
+        // 本页由落地页进入，不再重复承担启动语义
 
         btnOverlay = findViewById(R.id.btn_overlay_permission)
         btnNotify = findViewById(R.id.btn_notification_permission)
@@ -321,52 +274,7 @@ class AssistActivity : LocaleAwareActivity() {
         // bindService 返回值决定是否需要解绑：绑定失败仍置 bound 会在 onDestroy 泄漏连接
         bound = bindService(Intent(this, ScreenAssistService::class.java), connection, Context.BIND_AUTO_CREATE)
 
-        // 检查更新：仅手动触发（不主动检查是产品拍板）。查询走独立线程
-        // （AppUpdateChecker.fetchReleasesJson 为网络 IO，3s 超时），结果回主线程
-        // 弹窗/Toast；按钮检查期间禁用防重复点击。失败如实提示——
-        // api.github.com 在中国大陆通常需可访问 GitHub 的网络环境
-        val btnUpdate = findViewById<Button>(R.id.btn_check_update)
-        btnUpdate.setOnClickListener {
-            btnUpdate.isEnabled = false
-            btnUpdate.text = getString(R.string.update_checking)
-            val checker = com.xqdk.chess.assist.AppUpdateChecker(
-                com.xqdk.chess.BuildConfig.BUILD_DATE
-            )
-            // 一次性线程（查询完毕自然回收，不留滞留池）
-            Thread {
-                val result = checker.check()
-                runOnUiThread {
-                    btnUpdate.isEnabled = true
-                    btnUpdate.text = getString(R.string.update_check_button)
-                    when (result) {
-                        is com.xqdk.chess.assist.UpdateResult.UpToDate ->
-                            Toast.makeText(this,
-                                getString(R.string.update_up_to_date,
-                                    com.xqdk.chess.BuildConfig.BUILD_DATE),
-                                Toast.LENGTH_SHORT).show()
-                        is com.xqdk.chess.assist.UpdateResult.Newer ->
-                            androidx.appcompat.app.AlertDialog.Builder(this)
-                                .setTitle(getString(R.string.update_found_title, result.tag))
-                                .setMessage(
-                                    getString(R.string.update_found_message,
-                                        result.date, com.xqdk.chess.BuildConfig.BUILD_DATE)
-                                )
-                                .setPositiveButton(getString(R.string.update_open_page)) { _, _ ->
-                                    runCatching {
-                                        startActivity(
-                                            Intent(Intent.ACTION_VIEW, Uri.parse(
-                                                com.xqdk.chess.assist.AppUpdateChecker.RELEASES_PAGE))
-                                        )
-                                    }
-                                }
-                                .setNegativeButton(getString(R.string.cancel), null)
-                                .show()
-                        is com.xqdk.chess.assist.UpdateResult.Failure ->
-                            Toast.makeText(this, updateFailureText(result.reason), Toast.LENGTH_LONG).show()
-                    }
-                }
-            }.start()
-        }
+        // 检查更新入口已上移落地页页脚（2026-11-10 用户拍板），本页不再承载
     }
 
     /** 更新查询失败原因 → 本地化文案（网络层只回类型，文案留在 UI 层） */
@@ -423,65 +331,6 @@ class AssistActivity : LocaleAwareActivity() {
             .putExtra(ScreenAssistService.EXTRA_RESULT_CODE, captureIntentCode)
             .putExtra(ScreenAssistService.EXTRA_RESULT_DATA, captureIntentData)
         ContextCompat.startForegroundService(this, intent)
-    }
-
-    /**
-     * 免责声明弹窗：每次启动必弹（无可跳过、无持久化跳过），明确"仅供学习研究、
-     * 禁止用于对局平台"等使用边界；同意后进入连线页，不同意直接退出应用。
-     */
-    private fun maybeShowDisclaimer() {
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle(R.string.disclaimer_title)
-            .setMessage(disclaimer(this))
-            .setCancelable(false)
-            .setPositiveButton(R.string.disclaimer_agree) { d, _ ->
-                disclaimerAgreed = true
-                d.dismiss()
-            }
-            .setNegativeButton(R.string.disclaimer_disagree) { _, _ ->
-                finishAffinity()
-            }
-            .show()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(KEY_DISCLAIMER_AGREED, disclaimerAgreed)
-    }
-
-    /** 关于：本地对话框（特色功能 + 免责声明 + 鸣谢），不依赖外部站点 */
-    private fun showAboutDialog() {
-        val text = getString(R.string.about_body, com.xqdk.chess.BuildConfig.VERSION_NAME) +
-            "\n" + disclaimer(this) + "\n\n" +
-            credits(this)
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle(R.string.about_title)
-            .setIcon(com.xqdk.chess.R.drawable.ic_launcher)
-            .setMessage(text)
-            .setPositiveButton(R.string.i_know, null)
-            .show()
-    }
-
-    /** 语言切换：持久化后重建 Activity（连线页是 launcher，重建即生效） */
-    private fun showLanguageDialog() {
-        val options = arrayOf(
-            getString(R.string.language_vietnamese),
-            getString(R.string.language_chinese),
-        )
-        val current = if (LocaleHelper.isChinese(this)) 1 else 0
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle(R.string.language)
-            .setSingleChoiceItems(options, current) { d, which ->
-                d.dismiss()
-                val target = if (which == 1) LocaleHelper.LANG_ZH else LocaleHelper.LANG_VI
-                if (target == LocaleHelper.getLanguage(this)) return@setSingleChoiceItems
-                LocaleHelper.setLanguage(this, target)
-                com.xqdk.chess.i18n.MoveNotation.install()
-                // 重建任务栈：服务与悬浮窗仍在跑，仅界面换语言
-                recreate()
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
     }
 
     /** 文本变化才 setText（1s 轮询不重写视图，避免频跳） */
